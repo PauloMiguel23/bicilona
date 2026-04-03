@@ -566,6 +566,7 @@ class MainActivity : AppCompatActivity() {
                 val isReRoute = routePolylines.isNotEmpty()
                 showRoute(route, fitCamera = !isReRoute)
                 updateSaveFavoriteButton()
+                updateDestinationRadiusCircle()
                 emptyStateCard.visibility = View.GONE
             } else {
                 clearRouteFromMap()
