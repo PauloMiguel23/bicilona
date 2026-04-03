@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
@@ -75,6 +76,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvDropoffStation: TextView
     private lateinit var tvDropoffInfo: TextView
     private lateinit var tvDestWalkInfo: TextView
+
+    // Ride timer
+    private var rideTimer: CountDownTimer? = null
+    private var hasWarned = false
+    private var hasRedirected = false
 
     // Settings views
     private lateinit var tvBlockCount: TextView
@@ -208,6 +214,16 @@ class MainActivity : AppCompatActivity() {
                 route.dropoffStation.lon
             )
         }
+
+        // Start ride timer
+        findViewById<View>(R.id.btnStartRide).setOnClickListener {
+            startRideTimer()
+        }
+
+        // Stop ride timer
+        findViewById<View>(R.id.btnStopRide).setOnClickListener {
+            stopRideTimer()
+        }
     }
 
     private fun initBottomSheet() {
@@ -265,6 +281,34 @@ class MainActivity : AppCompatActivity() {
             val pInfo = packageManager.getPackageInfo(packageName, 0)
             findViewById<TextView>(R.id.tvVersion).text = "Bicilona v${pInfo.versionName}"
         } catch (_: Exception) { }
+
+        // Timer settings
+        val tvTimeLimit = findViewById<TextView>(R.id.tvTimeLimitValue)
+        val tvWarning = findViewById<TextView>(R.id.tvWarningValue)
+        val tvRedirect = findViewById<TextView>(R.id.tvRedirectValue)
+
+        viewModel.timeLimitMinutes.observe(this) { tvTimeLimit.text = it.toString() }
+        viewModel.warningMinutes.observe(this) { tvWarning.text = it.toString() }
+        viewModel.redirectMinutes.observe(this) { tvRedirect.text = it.toString() }
+
+        findViewById<MaterialButton>(R.id.btnTimeLimitMinus).setOnClickListener {
+            viewModel.setTimeLimit((viewModel.timeLimitMinutes.value ?: 30) - 5)
+        }
+        findViewById<MaterialButton>(R.id.btnTimeLimitPlus).setOnClickListener {
+            viewModel.setTimeLimit((viewModel.timeLimitMinutes.value ?: 30) + 5)
+        }
+        findViewById<MaterialButton>(R.id.btnWarningMinus).setOnClickListener {
+            viewModel.setWarningMinutes((viewModel.warningMinutes.value ?: 5) - 1)
+        }
+        findViewById<MaterialButton>(R.id.btnWarningPlus).setOnClickListener {
+            viewModel.setWarningMinutes((viewModel.warningMinutes.value ?: 5) + 1)
+        }
+        findViewById<MaterialButton>(R.id.btnRedirectMinus).setOnClickListener {
+            viewModel.setRedirectMinutes((viewModel.redirectMinutes.value ?: 1) - 1)
+        }
+        findViewById<MaterialButton>(R.id.btnRedirectPlus).setOnClickListener {
+            viewModel.setRedirectMinutes((viewModel.redirectMinutes.value ?: 1) + 1)
+        }
     }
 
     private fun initSearch() {
@@ -769,6 +813,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showRoute(route: BicilonaRoute, fitCamera: Boolean = true) {
         clearRouteFromMap()
+        stopRideTimer()
 
         val pickup = route.pickupStation
         val dropoff = route.dropoffStation
@@ -909,6 +954,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun cancelRoute() {
+        stopRideTimer()
         viewModel.cancelRoute()
         etDestination.text?.clear()
         // Zoom back to user
@@ -1148,6 +1194,116 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    // ════════════════════════════════════════
+    // Ride timer
+    // ════════════════════════════════════════
+
+    private fun startRideTimer() {
+        val limitMinutes = viewModel.timeLimitMinutes.value ?: 30
+        val totalMillis = limitMinutes * 60 * 1000L
+
+        hasWarned = false
+        hasRedirected = false
+
+        // Show timer UI, hide start button
+        findViewById<View>(R.id.btnStartRide).visibility = View.GONE
+        findViewById<View>(R.id.rideTimerContainer).visibility = View.VISIBLE
+
+        val tvCountdown = findViewById<TextView>(R.id.tvTimerCountdown)
+        val tvLabel = findViewById<TextView>(R.id.tvTimerLabel)
+        tvCountdown.setTextColor(Color.parseColor("#4CAF50"))
+        tvLabel.text = "Time remaining"
+
+        rideTimer?.cancel()
+        rideTimer = object : CountDownTimer(totalMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val totalSecs = (millisUntilFinished / 1000).toInt()
+                val mins = totalSecs / 60
+                val secs = totalSecs % 60
+                tvCountdown.text = String.format("%02d:%02d", mins, secs)
+
+                val warningThreshold = (viewModel.warningMinutes.value ?: 5) * 60
+                val redirectThreshold = (viewModel.redirectMinutes.value ?: 1) * 60
+
+                // Color transitions
+                when {
+                    totalSecs <= redirectThreshold -> {
+                        tvCountdown.setTextColor(Color.parseColor("#E30613"))
+                        tvLabel.text = "⚠️ Return bike NOW!"
+                    }
+                    totalSecs <= warningThreshold -> {
+                        tvCountdown.setTextColor(Color.parseColor("#FF9800"))
+                        tvLabel.text = "⏰ Return bike soon"
+                    }
+                }
+
+                // Warning alert
+                if (!hasWarned && totalSecs <= warningThreshold) {
+                    hasWarned = true
+                    Toast.makeText(
+                        this@MainActivity,
+                        "⏰ ${mins} min left — find a station!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                // Auto-redirect
+                if (!hasRedirected && totalSecs <= redirectThreshold) {
+                    hasRedirected = true
+                    autoRedirectToNearestStation()
+                }
+            }
+
+            override fun onFinish() {
+                tvCountdown.text = "00:00"
+                tvCountdown.setTextColor(Color.parseColor("#E30613"))
+                tvLabel.text = "⚠️ Time's up — you're being charged!"
+                Toast.makeText(
+                    this@MainActivity,
+                    "🚨 Free ride limit exceeded!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }.start()
+
+        // Expand bottom sheet to show timer
+        bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    private fun stopRideTimer() {
+        rideTimer?.cancel()
+        rideTimer = null
+        hasWarned = false
+        hasRedirected = false
+
+        // Hide timer UI, show start button
+        findViewById<View>(R.id.rideTimerContainer).visibility = View.GONE
+        findViewById<View>(R.id.btnStartRide).visibility = View.VISIBLE
+    }
+
+    private fun autoRedirectToNearestStation() {
+        val station = viewModel.findNearestDropoffToUser() ?: run {
+            Toast.makeText(this, "No stations with free docks nearby!", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        Toast.makeText(
+            this,
+            "🚲 Redirecting to ${station.name} (${station.docksAvailable} docks free)",
+            Toast.LENGTH_LONG
+        ).show()
+
+        // Open Google Maps with bicycling directions to the nearest station
+        val loc = viewModel.userLocation ?: return
+        LocationUtils.launchGoogleMapsDirections(
+            this,
+            loc.latitude,
+            loc.longitude,
+            station.lat,
+            station.lon
+        )
+    }
+
     private fun showFavoritesDropdown() {
         if (suppressDropdown) return
         val query = etDestination.text?.toString()?.trim() ?: ""
@@ -1181,6 +1337,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopLocationUpdates()
+        rideTimer?.cancel()
         pulseAnimator?.stop()
         searchRunnable?.let { searchHandler.removeCallbacks(it) }
     }

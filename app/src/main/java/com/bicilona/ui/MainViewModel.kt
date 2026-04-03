@@ -283,6 +283,47 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _error.value = null
     }
 
+    // ──── Timer settings ────
+
+    private val _timeLimitMinutes = MutableLiveData(prefs.getInt("time_limit", 30))
+    val timeLimitMinutes: LiveData<Int> = _timeLimitMinutes
+
+    private val _warningMinutes = MutableLiveData(prefs.getInt("warning_minutes", 5))
+    val warningMinutes: LiveData<Int> = _warningMinutes
+
+    private val _redirectMinutes = MutableLiveData(prefs.getInt("redirect_minutes", 1))
+    val redirectMinutes: LiveData<Int> = _redirectMinutes
+
+    fun setTimeLimit(minutes: Int) {
+        val clamped = minutes.coerceIn(5, 60)
+        _timeLimitMinutes.value = clamped
+        prefs.edit().putInt("time_limit", clamped).apply()
+    }
+
+    fun setWarningMinutes(minutes: Int) {
+        val clamped = minutes.coerceIn(1, 15)
+        _warningMinutes.value = clamped
+        prefs.edit().putInt("warning_minutes", clamped).apply()
+    }
+
+    fun setRedirectMinutes(minutes: Int) {
+        val clamped = minutes.coerceIn(1, 10)
+        _redirectMinutes.value = clamped
+        prefs.edit().putInt("redirect_minutes", clamped).apply()
+    }
+
+    /**
+     * Find the nearest station with free docks to the user's current location
+     */
+    fun findNearestDropoffToUser(): BicilonaStation? {
+        val loc = userLocation ?: return null
+        return allStations
+            .filter { it.isOperational && it.docksAvailable > 0 }
+            .minByOrNull {
+                LocationUtils.distanceMeters(loc.latitude, loc.longitude, it.lat, it.lon)
+            }
+    }
+
     // ──── Favorites ────
 
     val favorites: LiveData<List<FavoritePlace>> = favoriteDao.getAll()

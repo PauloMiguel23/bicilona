@@ -583,6 +583,63 @@
                         app:cornerRadius="12dp"
                         app:backgroundTint="@color/bicing_blue" />
                 </LinearLayout>
+
+                <!-- Start ride button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStartRide"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:text="🚲  Start ride timer"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    app:cornerRadius="12dp"
+                    app:backgroundTint="@color/bicing_green" />
+
+                <!-- Ride timer (hidden until ride starts) -->
+                <LinearLayout
+                    android:id="@+id/rideTimerContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvTimerLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Time remaining"
+                        android:textSize="12sp"
+                        android:textColor="#757575" />
+
+                    <TextView
+                        android:id="@+id/tvTimerCountdown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="30:00"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/bicing_green"
+                        android:fontFamily="monospace" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnStopRide"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="8dp"
+                        android:text="⏹  Stop timer"
+                        android:textSize="12sp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/bicing_red"
+                        app:strokeColor="@color/bicing_red"
+                        app:cornerRadius="10dp"
+                        android:minHeight="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -694,6 +751,90 @@
                 android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
                 android:layout_marginStart="4dp" android:text="⚡" android:textSize="13sp"
                 android:textAllCaps="false" android:padding="0dp" android:minWidth="0dp" app:cornerRadius="10dp" />
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:layout_marginVertical="16dp" android:background="#E0E0E0" />
+
+        <!-- Ride Timer settings -->
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Ride Timer" android:textSize="14sp" android:textStyle="bold"
+            android:textColor="@color/bicing_dark" android:paddingBottom="8dp" />
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Bicing free ride limit and auto-redirect threshold"
+            android:textSize="12sp" android:textColor="#757575" android:paddingBottom="12dp" />
+
+        <!-- Time limit -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="10dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="Free ride limit"
+                android:textSize="13sp" android:textColor="@color/bicing_dark" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnTimeLimitMinus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="−"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
+                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:id="@+id/tvTimeLimitValue" android:layout_width="48dp"
+                android:layout_height="wrap_content" android:gravity="center"
+                android:text="30" android:textSize="16sp" android:textStyle="bold"
+                android:textColor="@color/bicing_dark" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnTimeLimitPlus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="+"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
+                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text=" min" android:textSize="13sp" android:textColor="#757575" />
+        </LinearLayout>
+
+        <!-- Warning threshold -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="10dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="Warning alert"
+                android:textSize="13sp" android:textColor="@color/bicing_dark" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnWarningMinus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="−"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
+                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:id="@+id/tvWarningValue" android:layout_width="48dp"
+                android:layout_height="wrap_content" android:gravity="center"
+                android:text="5" android:textSize="16sp" android:textStyle="bold"
+                android:textColor="@color/bicing_dark" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnWarningPlus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="+"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
+                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text=" min" android:textSize="13sp" android:textColor="#757575" />
+        </LinearLayout>
+
+        <!-- Auto-redirect threshold -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="Auto-redirect"
+                android:textSize="13sp" android:textColor="@color/bicing_dark" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnRedirectMinus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="−"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
+                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:id="@+id/tvRedirectValue" android:layout_width="48dp"
+                android:layout_height="wrap_content" android:gravity="center"
+                android:text="1" android:textSize="16sp" android:textStyle="bold"
+                android:textColor="@color/bicing_dark" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnRedirectPlus"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="+"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
+                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text=" min" android:textSize="13sp" android:textColor="#757575" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
