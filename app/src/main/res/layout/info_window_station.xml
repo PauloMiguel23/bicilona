@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_info_window"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:minWidth="180dp">
 
     <!-- Station name -->
     <TextView
@@ -18,12 +19,32 @@
         android:maxLines="2"
         android:ellipsize="end" />
 
+    <!-- Capacity bar -->
+    <ProgressBar
+        android:id="@+id/capacityBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="6dp"
+        android:progressDrawable="@drawable/bg_capacity_bar"
+        android:max="100"
+        android:progress="50" />
+
+    <TextView
+        android:id="@+id/tvCapacityLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:textColor="#999999"
+        android:layout_marginTop="2dp"
+        android:gravity="center" />
+
     <!-- Bike counts: two equal columns -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginVertical="4dp">
+        android:layout_marginTop="6dp">
 
         <!-- Mechanical -->
         <TextView
@@ -51,6 +72,7 @@
         android:id="@+id/tvInfoDocks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:textSize="11sp"
         android:textColor="#757575" />
 

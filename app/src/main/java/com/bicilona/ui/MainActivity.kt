@@ -28,7 +28,11 @@ import com.bicilona.data.model.BicilonaStation
 import com.bicilona.util.LocationUtils
 import com.bicilona.util.MarkerFactory
 import com.bicilona.util.PulseAnimator
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -60,9 +64,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvCurrentLocation: TextView
     private lateinit var btnResetPickup: ImageButton
     private lateinit var progressBar: View
+    private lateinit var emptyStateCard: View
 
     // Bottom sheet views
-    private lateinit var tvRouteTitle: TextView
+    private lateinit var tvTotalTime: TextView
     private lateinit var tvRouteSummary: TextView
     private lateinit var tvPickupStation: TextView
     private lateinit var tvPickupInfo: TextView
@@ -91,6 +96,11 @@ class MainActivity : AppCompatActivity() {
     private var currentPredictions: List<AutocompletePrediction> = emptyList()
     private val searchHandler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+
+    // Live location
+    private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
+    private var locationCallback: LocationCallback? = null
+    private var hasInitialLocation = false
 
     // Cached marker icons
     private lateinit var dotGreen: BitmapDescriptor
@@ -140,9 +150,15 @@ class MainActivity : AppCompatActivity() {
         tvCurrentLocation = findViewById(R.id.tvCurrentLocation)
         btnResetPickup = findViewById(R.id.btnResetPickup)
         progressBar = findViewById(R.id.progressBar)
+        emptyStateCard = findViewById(R.id.emptyStateCard)
+
+        // Empty state expand radius button
+        findViewById<View>(R.id.btnExpandRadius).setOnClickListener {
+            viewModel.incrementBlocks()
+        }
 
         // Bottom sheet views
-        tvRouteTitle = findViewById(R.id.tvRouteTitle)
+        tvTotalTime = findViewById(R.id.tvTotalTime)
         tvRouteSummary = findViewById(R.id.tvRouteSummary)
         tvPickupStation = findViewById(R.id.tvPickupStation)
         tvPickupInfo = findViewById(R.id.tvPickupInfo)
@@ -351,6 +367,20 @@ class MainActivity : AppCompatActivity() {
                     "⚡ ${station.electricBikes}"
                 view.findViewById<TextView>(R.id.tvInfoDocks).text =
                     "🅿️ ${station.docksAvailable} docks free"
+
+                // Capacity bar
+                val capacityBar = view.findViewById<android.widget.ProgressBar>(R.id.capacityBar)
+                val capacityLabel = view.findViewById<TextView>(R.id.tvCapacityLabel)
+                if (station.capacity > 0) {
+                    val fillPercent = (station.bikesAvailable * 100) / station.capacity
+                    capacityBar.max = 100
+                    capacityBar.progress = fillPercent
+                    capacityLabel.text = "${station.bikesAvailable}/${station.capacity} bikes"
+                } else {
+                    capacityBar.visibility = View.GONE
+                    capacityLabel.visibility = View.GONE
+                }
+
                 return view
             }
         })
@@ -422,19 +452,52 @@ class MainActivity : AppCompatActivity() {
     private fun loadClosestStations() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return
 
-        val fusedClient = LocationServices.getFusedLocationProviderClient(this)
-        fusedClient.lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
+        // Get initial location fast
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null && !hasInitialLocation) {
+                hasInitialLocation = true
                 val latLng = LatLng(location.latitude, location.longitude)
                 viewModel.userLocation = latLng
                 viewModel.loadStations()
-                // Zoom to user location
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-            } else {
+            } else if (!hasInitialLocation) {
                 Log.w(TAG, "Last location is null, loading all stations")
                 viewModel.loadStations()
             }
         }
+
+        // Start continuous updates
+        startLocationUpdates()
+    }
+
+    private fun startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return
+
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10_000L)
+            .setMinUpdateDistanceMeters(15f)
+            .setMinUpdateIntervalMillis(5_000L)
+            .build()
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                val location = result.lastLocation ?: return
+                val latLng = LatLng(location.latitude, location.longitude)
+                viewModel.userLocation = latLng
+
+                if (!hasInitialLocation) {
+                    hasInitialLocation = true
+                    viewModel.loadStations()
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                }
+            }
+        }
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback!!, Looper.getMainLooper())
+    }
+
+    private fun stopLocationUpdates() {
+        locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
+        locationCallback = null
     }
 
     // ════════════════════════════════════════
@@ -444,6 +507,9 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.visibleStations.observe(this) { stations ->
             updateStationMarkers(stations)
+            // Show empty state if no stations in radius (and we have a location)
+            val showEmpty = stations.isEmpty() && viewModel.userLocation != null && viewModel.route.value == null
+            emptyStateCard.visibility = if (showEmpty) View.VISIBLE else View.GONE
         }
 
         viewModel.nearestStation.observe(this) { station ->
@@ -480,6 +546,7 @@ class MainActivity : AppCompatActivity() {
                 val isReRoute = routePolylines.isNotEmpty()
                 showRoute(route, fitCamera = !isReRoute)
                 updateSaveFavoriteButton()
+                emptyStateCard.visibility = View.GONE
             } else {
                 clearRouteFromMap()
                 bottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
@@ -759,12 +826,19 @@ class MainActivity : AppCompatActivity() {
         val destDist = LocationUtils.formatDistance(route.walkToDestinationMeters)
         val destTime = route.walkToDestDuration ?: "${LocationUtils.walkingMinutes(route.walkToDestinationMeters)} min"
 
-        tvRouteSummary.text = "$rideTime · $rideDist ride"
+        // Total estimated time
+        val walkMin = parseMinutes(walkTime)
+        val rideMin = parseMinutes(rideTime)
+        val destMin = parseMinutes(destTime)
+        val totalMin = walkMin + rideMin + destMin
+        tvTotalTime.text = if (totalMin > 0) "${totalMin} min" else "Calculating…"
+        tvRouteSummary.text = "$walkTime walk → $rideTime ride → $destTime walk"
+
         tvPickupStation.text = pickup.name
-        tvPickupInfo.text = "$walkDist · $walkTime · ${viewModel.relevantBikeCount(pickup)} bikes"
+        tvPickupInfo.text = "$walkDist · $walkTime · ${viewModel.relevantBikeCount(pickup)}/${pickup.capacity} bikes"
         tvRideInfo.text = "$rideDist · $rideTime"
         tvDropoffStation.text = dropoff.name
-        tvDropoffInfo.text = "${dropoff.docksAvailable} docks free"
+        tvDropoffInfo.text = "${dropoff.docksAvailable}/${dropoff.capacity} docks free"
         tvDestWalkInfo.text = "$destDist · $destTime walk"
 
         // Show bottom sheet
@@ -970,6 +1044,18 @@ class MainActivity : AppCompatActivity() {
         return currentFavorites.filter { it.name.contains(query, ignoreCase = true) }
     }
 
+    /**
+     * Extract numeric minutes from duration strings like "4 min", "1 hour 2 mins", etc.
+     */
+    private fun parseMinutes(duration: String): Int {
+        var total = 0
+        val hourMatch = Regex("(\\d+)\\s*hour").find(duration)
+        if (hourMatch != null) total += hourMatch.groupValues[1].toInt() * 60
+        val minMatch = Regex("(\\d+)\\s*min").find(duration)
+        if (minMatch != null) total += minMatch.groupValues[1].toInt()
+        return total
+    }
+
     private fun showFavoritesDropdown() {
         val query = etDestination.text?.toString()?.trim() ?: ""
         val filtered = filterFavorites(query)
@@ -1001,6 +1087,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopLocationUpdates()
         pulseAnimator?.stop()
         searchRunnable?.let { searchHandler.removeCallbacks(it) }
     }

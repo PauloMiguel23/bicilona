@@ -168,6 +168,65 @@
             android:layout_gravity="center"
             android:visibility="gone" />
 
+        <!-- Empty state: no stations in radius -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/emptyStateCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@color/bicing_white">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🚲"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/tvEmptyStateMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="No stations nearby"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bicing_dark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Try increasing your search radius"
+                    android:textSize="12sp"
+                    android:textColor="#757575" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExpandRadius"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="8dp"
+                    android:text="＋ Expand radius"
+                    android:textSize="12sp"
+                    android:textAllCaps="false"
+                    android:minHeight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:cornerRadius="10dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- ═══════════════════════════════════ -->
         <!-- Bottom Sheet                       -->
         <!-- ═══════════════════════════════════ -->
@@ -210,13 +269,13 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tvRouteTitle"
+                        android:id="@+id/tvTotalTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Bicilona Route"
-                        android:textSize="17sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
-                        android:textColor="@color/bicing_dark" />
+                        android:textColor="@color/bicing_dark"
+                        tools:text="14 min" />
 
                     <TextView
                         android:id="@+id/tvRouteSummary"
@@ -225,7 +284,7 @@
                         android:textSize="13sp"
                         android:textColor="#757575"
                         android:layout_marginTop="2dp"
-                        tools:text="12 min · 2.3 km ride" />
+                        tools:text="3 min walk → 9 min ride → 2 min walk" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
