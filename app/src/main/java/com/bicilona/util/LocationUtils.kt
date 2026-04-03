@@ -50,7 +50,30 @@ object LocationUtils {
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {
-            // Fallback if Google Maps is not installed
+            context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, uri))
+        }
+    }
+
+    /**
+     * Launch Google Maps with full directions: origin → destination, bicycling mode.
+     */
+    fun launchGoogleMapsDirections(
+        context: android.content.Context,
+        originLat: Double, originLon: Double,
+        destLat: Double, destLon: Double
+    ) {
+        val uri = android.net.Uri.parse(
+            "https://www.google.com/maps/dir/?api=1" +
+            "&origin=$originLat,$originLon" +
+            "&destination=$destLat,$destLon" +
+            "&travelmode=bicycling"
+        )
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.google.android.apps.maps")
+        }
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
             context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, uri))
         }
     }

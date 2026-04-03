@@ -200,10 +200,12 @@ class MainActivity : AppCompatActivity() {
         // Navigate button
         findViewById<View>(R.id.btnNavigate).setOnClickListener {
             val route = viewModel.route.value ?: return@setOnClickListener
-            LocationUtils.launchGoogleMaps(
+            LocationUtils.launchGoogleMapsDirections(
                 this,
                 route.pickupStation.lat,
-                route.pickupStation.lon
+                route.pickupStation.lon,
+                route.dropoffStation.lat,
+                route.dropoffStation.lon
             )
         }
     }
