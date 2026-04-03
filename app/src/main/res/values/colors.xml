@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bicing_red">#E30613</color>
+    <color name="bicing_dark">#1A1A2E</color>
+    <color name="bicing_white">#FFFFFF</color>
+    <color name="bicing_light_gray">#F5F5F5</color>
+    <color name="bicing_green">#4CAF50</color>
+    <color name="bicing_blue">#2196F3</color>
+    <color name="bicing_orange">#FF9800</color>
+</resources>

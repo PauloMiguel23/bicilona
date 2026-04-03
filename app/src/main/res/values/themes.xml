@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Bicilona" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/bicing_red</item>
+        <item name="colorOnPrimary">@color/bicing_white</item>
+        <item name="colorSecondary">@color/bicing_blue</item>
+        <item name="android:statusBarColor">@color/bicing_dark</item>
+    </style>
+</resources>

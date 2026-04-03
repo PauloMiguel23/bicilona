@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="10dp"
+    android:background="?attr/selectableItemBackground">
+
+    <TextView
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:text="⭐"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:layout_marginEnd="10dp" />
+
+    <TextView
+        android:id="@+id/tvDropdownFavName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="14sp"
+        android:textColor="#1A1A2E"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <ImageButton
+        android:id="@+id/btnDropdownDeleteFav"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:contentDescription="Delete"
+        android:background="@android:color/transparent"
+        android:scaleType="centerInside"
+        app:tint="#CCCCCC" />
+</LinearLayout>

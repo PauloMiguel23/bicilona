@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bicilona</string>
+    <string name="search_destination">Where are you going?</string>
+    <string name="find_route">Find Bicing Route</string>
+    <string name="loading">Loading stations…</string>
+    <string name="error_location">Could not get your location</string>
+    <string name="error_stations">Could not load Bicing stations</string>
+    <string name="pickup_label">🚲 Pick up bike here</string>
+    <string name="dropoff_label">🅿️ Drop off bike here</string>
+    <string name="bikes_available">%d bikes available</string>
+    <string name="docks_available">%d docks available</string>
+    <string name="walk_to_pickup">Walk %s to pick up</string>
+    <string name="ride_to_dropoff">Ride %s</string>
+    <string name="walk_to_destination">Walk %s to destination</string>
+</resources>
