@@ -7,7 +7,6 @@ import android.os.*
 import androidx.core.app.NotificationCompat
 import com.bicilona.R
 import com.bicilona.ui.MainActivity
-import com.bicilona.util.LocationUtils
 
 class RideTimerService : Service() {
 
@@ -22,16 +21,21 @@ class RideTimerService : Service() {
         const val EXTRA_WARNING_MINUTES = "warning_minutes"
         const val EXTRA_REDIRECT_MINUTES = "redirect_minutes"
 
-        // Broadcast actions for UI updates
-        const val BROADCAST_TICK = "com.bicilona.TIMER_TICK"
-        const val BROADCAST_WARNING = "com.bicilona.TIMER_WARNING"
-        const val BROADCAST_REDIRECT = "com.bicilona.TIMER_REDIRECT"
-        const val BROADCAST_FINISHED = "com.bicilona.TIMER_FINISHED"
-        const val EXTRA_SECONDS_LEFT = "seconds_left"
-        const val EXTRA_TOTAL_SECONDS = "total_seconds"
-
         var isRunning = false
             private set
+
+        // Direct callbacks — service and activity share the same process
+        var onTick: ((secsLeft: Int) -> Unit)? = null
+        var onWarning: (() -> Unit)? = null
+        var onRedirect: (() -> Unit)? = null
+        var onFinished: (() -> Unit)? = null
+
+        fun clearCallbacks() {
+            onTick = null
+            onWarning = null
+            onRedirect = null
+            onFinished = null
+        }
     }
 
     private var countDownTimer: CountDownTimer? = null
@@ -88,27 +92,29 @@ class RideTimerService : Service() {
             override fun onTick(millisUntilFinished: Long) {
                 val secsLeft = (millisUntilFinished / 1000).toInt()
                 updateNotification(secsLeft, totalSeconds)
-                sendTickBroadcast(secsLeft, totalSeconds)
+
+                // Update activity UI via direct callback
+                onTick?.invoke(secsLeft)
 
                 // Warning vibration
                 if (!hasWarned && secsLeft <= warningSeconds) {
                     hasWarned = true
                     vibrateWarning()
-                    sendBroadcast(Intent(BROADCAST_WARNING))
+                    onWarning?.invoke()
                 }
 
                 // Redirect vibration
                 if (!hasRedirected && secsLeft <= redirectSeconds) {
                     hasRedirected = true
                     vibrateRedirect()
-                    sendBroadcast(Intent(BROADCAST_REDIRECT))
+                    onRedirect?.invoke()
                 }
             }
 
             override fun onFinish() {
                 vibrateRedirect()
                 updateNotificationFinished()
-                sendBroadcast(Intent(BROADCAST_FINISHED))
+                onFinished?.invoke()
                 isRunning = false
             }
         }.start()
@@ -134,7 +140,7 @@ class RideTimerService : Service() {
         val channel = NotificationChannel(
             CHANNEL_ID,
             "Ride Timer",
-            NotificationManager.IMPORTANCE_LOW  // No sound on every tick
+            NotificationManager.IMPORTANCE_LOW
         ).apply {
             description = "Shows remaining free ride time"
             setShowBadge(false)
@@ -182,7 +188,6 @@ class RideTimerService : Service() {
     }
 
     private fun updateNotificationFinished() {
-        // High-importance channel for the final alert
         val alertChannel = NotificationChannel(
             "ride_timer_alert",
             "Ride Timer Alert",
@@ -217,7 +222,6 @@ class RideTimerService : Service() {
     // ── Vibration ──────────────────────────────────────────────────
 
     private fun vibrateWarning() {
-        // Two short pulses
         val pattern = longArrayOf(0, 300, 200, 300)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
@@ -228,7 +232,6 @@ class RideTimerService : Service() {
     }
 
     private fun vibrateRedirect() {
-        // Three strong pulses — urgent
         val pattern = longArrayOf(0, 500, 200, 500, 200, 500)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
@@ -236,14 +239,5 @@ class RideTimerService : Service() {
             @Suppress("DEPRECATION")
             vibrator?.vibrate(pattern, -1)
         }
-    }
-
-    // ── Broadcasts ─────────────────────────────────────────────────
-
-    private fun sendTickBroadcast(secsLeft: Int, totalSecs: Int) {
-        sendBroadcast(Intent(BROADCAST_TICK).apply {
-            putExtra(EXTRA_SECONDS_LEFT, secsLeft)
-            putExtra(EXTRA_TOTAL_SECONDS, totalSecs)
-        })
     }
 }
