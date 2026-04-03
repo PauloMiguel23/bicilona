@@ -1215,11 +1215,15 @@ class MainActivity : AppCompatActivity() {
         // Show timer UI, hide start button
         findViewById<View>(R.id.btnStartRide).visibility = View.GONE
         findViewById<View>(R.id.rideTimerContainer).visibility = View.VISIBLE
+        findViewById<View>(R.id.peekTimerContainer).visibility = View.VISIBLE
 
         val tvCountdown = findViewById<TextView>(R.id.tvTimerCountdown)
+        val tvPeekCountdown = findViewById<TextView>(R.id.tvPeekTimerCountdown)
         val tvLabel = findViewById<TextView>(R.id.tvTimerLabel)
         tvCountdown.text = String.format("%02d:%02d", limitMinutes, 0)
+        tvPeekCountdown.text = String.format("%02d:%02d", limitMinutes, 0)
         tvCountdown.setTextColor(Color.parseColor("#4CAF50"))
+        tvPeekCountdown.setTextColor(Color.parseColor("#4CAF50"))
         tvLabel.text = "Time remaining"
 
         // Request notification permission (Android 13+)
@@ -1235,20 +1239,27 @@ class MainActivity : AppCompatActivity() {
         RideTimerService.onTick = { secsLeft ->
             val mins = secsLeft / 60
             val secs = secsLeft % 60
-            tvCountdown.text = String.format("%02d:%02d", mins, secs)
+            val timeStr = String.format("%02d:%02d", mins, secs)
+            tvCountdown.text = timeStr
+            tvPeekCountdown.text = timeStr
 
             val warningThreshold = (viewModel.warningMinutes.value ?: 5) * 60
             val redirectThreshold = (viewModel.redirectMinutes.value ?: 1) * 60
 
-            when {
+            val color = when {
                 secsLeft <= redirectThreshold -> {
-                    tvCountdown.setTextColor(Color.parseColor("#E30613"))
                     tvLabel.text = "⚠️ Return bike NOW!"
+                    Color.parseColor("#E30613")
                 }
                 secsLeft <= warningThreshold -> {
-                    tvCountdown.setTextColor(Color.parseColor("#FF9800"))
                     tvLabel.text = "⏰ Return bike soon"
+                    Color.parseColor("#FF9800")
                 }
+                else -> null
+            }
+            if (color != null) {
+                tvCountdown.setTextColor(color)
+                tvPeekCountdown.setTextColor(color)
             }
         }
 
@@ -1262,7 +1273,9 @@ class MainActivity : AppCompatActivity() {
 
         RideTimerService.onFinished = {
             tvCountdown.text = "00:00"
+            tvPeekCountdown.text = "00:00"
             tvCountdown.setTextColor(Color.parseColor("#E30613"))
+            tvPeekCountdown.setTextColor(Color.parseColor("#E30613"))
             tvLabel.text = "⚠️ Time's up — you're being charged!"
             Toast.makeText(this, "🚨 Free ride limit exceeded!", Toast.LENGTH_LONG).show()
         }
@@ -1293,6 +1306,7 @@ class MainActivity : AppCompatActivity() {
 
         // Hide timer UI, show start button
         findViewById<View>(R.id.rideTimerContainer).visibility = View.GONE
+        findViewById<View>(R.id.peekTimerContainer).visibility = View.GONE
         findViewById<View>(R.id.btnStartRide).visibility = View.VISIBLE
     }
 

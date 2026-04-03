@@ -311,6 +311,34 @@
                         tools:text="3 min walk → 9 min ride → 2 min walk" />
                 </LinearLayout>
 
+                <!-- Compact ride timer (visible in peek when timer is running) -->
+                <LinearLayout
+                    android:id="@+id/peekTimerContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingHorizontal="8dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvPeekTimerCountdown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="monospace"
+                        android:textColor="#4CAF50"
+                        android:text="30:00" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:textColor="#757575"
+                        android:text="ride timer" />
+                </LinearLayout>
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancelRoute"
                     style="@style/Widget.Material3.Button.TextButton"
