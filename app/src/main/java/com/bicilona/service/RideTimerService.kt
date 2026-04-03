@@ -3,7 +3,7 @@ package com.bicilona.service
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+
 import android.os.*
 import androidx.core.app.NotificationCompat
 import com.bicilona.R
@@ -128,33 +128,54 @@ class RideTimerService : Service() {
     }
 
     /**
-     * Find the nearest station with docks and launch Google Maps navigation to it.
-     * Called from the foreground service context, which is allowed to start
-     * activities even when the app is in the background (Android 10+).
+     * Find the nearest station with docks and launch navigation via a full-screen
+     * intent notification. This works even when the phone is locked/screen off,
+     * because Android treats full-screen intents like alarm/call screens —
+     * waking the device and showing the activity over the lock screen.
      */
     private fun launchRedirectNavigation() {
         val coords = findRedirectStation?.invoke() ?: return
-        val uri = Uri.parse("google.navigation:q=${coords.first},${coords.second}&mode=b")
-        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-            setPackage("com.google.android.apps.maps")
-            // CLEAR_TASK wipes Google Maps' current navigation state so the new
-            // route starts immediately without a "stop current navigation?" prompt
+
+        // Create a high-priority channel for the redirect alert
+        val redirectChannel = NotificationChannel(
+            "ride_redirect_channel",
+            "Ride Redirect",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Navigates to nearest station when time is running out"
+            enableVibration(true)
+        }
+        val nm = getSystemService(NotificationManager::class.java)
+        nm.createNotificationChannel(redirectChannel)
+
+        // Intent that wakes screen, shows over lock screen, and launches Google Maps
+        val redirectIntent = Intent(this, com.bicilona.ui.RedirectActivity::class.java).apply {
+            putExtra(com.bicilona.ui.RedirectActivity.EXTRA_LAT, coords.first)
+            putExtra(com.bicilona.ui.RedirectActivity.EXTRA_LNG, coords.second)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
-        try {
-            startActivity(intent)
-        } catch (_: Exception) {
-            // Fallback: open directions URL
-            val fallbackUri = Uri.parse(
-                "https://www.google.com/maps/dir/?api=1" +
-                "&destination=${coords.first},${coords.second}" +
-                "&travelmode=bicycling"
-            )
-            val fallbackIntent = Intent(Intent.ACTION_VIEW, fallbackUri).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            try { startActivity(fallbackIntent) } catch (_: Exception) {}
-        }
+
+        val fullScreenPi = PendingIntent.getActivity(
+            this, 100, redirectIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Full-screen intent notification — Android will either:
+        // - Launch the activity directly (screen off/locked) — like an alarm
+        // - Show a heads-up notification (screen on) — tap to navigate
+        val notification = NotificationCompat.Builder(this, "ride_redirect_channel")
+            .setSmallIcon(R.drawable.ic_bike_foreground)
+            .setContentTitle("🚨 Redirecting to nearest station")
+            .setContentText("Time is running out — navigating you to a dock")
+            .setFullScreenIntent(fullScreenPi, true)
+            .setContentIntent(fullScreenPi)
+            .setAutoCancel(true)
+            .setOngoing(false)
+            .setCategory(NotificationCompat.CATEGORY_NAVIGATION)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        nm.notify(NOTIFICATION_ID + 1, notification)
     }
 
     private fun stopTimer() {
