@@ -366,7 +366,7 @@ class MainActivity : AppCompatActivity() {
                 view.findViewById<TextView>(R.id.tvInfoElectric).text =
                     "⚡ ${station.electricBikes}"
                 view.findViewById<TextView>(R.id.tvInfoDocks).text =
-                    "🅿️ ${station.docksAvailable} docks free"
+                    "🅿️ ${station.docksAvailable}"
 
                 // Capacity bar
                 val capacityBar = view.findViewById<android.widget.ProgressBar>(R.id.capacityBar)
