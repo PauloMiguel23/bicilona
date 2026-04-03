@@ -163,7 +163,7 @@ class RideTimerService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_bike_foreground)
             .setContentTitle("🚲 Ride Timer: $timeStr")
             .setContentText("Free ride time remaining")
             .setContentIntent(contentIntent)
@@ -203,7 +203,7 @@ class RideTimerService : Service() {
         )
 
         val notification = NotificationCompat.Builder(this, "ride_timer_alert")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_bike_foreground)
             .setContentTitle("🚨 Free ride time expired!")
             .setContentText("You're now being charged extra")
             .setContentIntent(contentIntent)
