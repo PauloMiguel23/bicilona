@@ -34,7 +34,7 @@
             android:layout_marginTop="16dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="6dp"
-            app:cardBackgroundColor="#E3F2FD">
+            app:cardBackgroundColor="@color/bicing_dark">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:layout_marginVertical="2dp"
-                        android:background="#CCCCCC" />
+                        android:background="#555566" />
 
                     <!-- Red destination dot -->
                     <View
@@ -85,7 +85,7 @@
                         android:layout_height="36dp"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:background="@drawable/bg_field"
+                        android:background="@drawable/bg_field_dark"
                         android:paddingHorizontal="10dp">
 
                         <TextView
@@ -95,7 +95,7 @@
                             android:layout_weight="1"
                             android:text="Getting nearest station…"
                             android:textSize="13sp"
-                            android:textColor="@color/bicing_dark"
+                            android:textColor="#E0E0E0"
                             android:ellipsize="end"
                             android:maxLines="1" />
 
@@ -108,7 +108,7 @@
                             android:background="@android:color/transparent"
                             android:scaleType="centerInside"
                             android:visibility="gone"
-                            app:tint="@color/bicing_red" />
+                            app:tint="#E0E0E0" />
                     </LinearLayout>
 
                     <View
@@ -121,12 +121,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="36dp"
                         android:hint="@string/search_destination"
-                        android:background="@drawable/bg_field"
+                        android:background="@drawable/bg_field_dark"
                         android:paddingHorizontal="10dp"
                         android:inputType="text"
                         android:textSize="13sp"
-                        android:textColorHint="#AAAAAA"
-                        android:textColor="@color/bicing_dark"
+                        android:textColorHint="#777788"
+                        android:textColor="#FFFFFF"
                         android:maxLines="1"
                         android:completionThreshold="1"
                         android:dropDownWidth="match_parent"
