@@ -443,7 +443,8 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.route.observe(this) { route ->
             if (route != null) {
-                showRoute(route)
+                val isReRoute = routePolylines.isNotEmpty()
+                showRoute(route, fitCamera = !isReRoute)
             } else {
                 clearRouteFromMap()
                 bottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
@@ -566,7 +567,7 @@ class MainActivity : AppCompatActivity() {
     // Route display
     // ════════════════════════════════════════
 
-    private fun showRoute(route: BicilonaRoute) {
+    private fun showRoute(route: BicilonaRoute, fitCamera: Boolean = true) {
         clearRouteFromMap()
 
         val pickup = route.pickupStation
@@ -639,16 +640,18 @@ class MainActivity : AppCompatActivity() {
             ))
         }
 
-        // Fit camera to route
-        val boundsBuilder = LatLngBounds.builder()
-        viewModel.userLocation?.let { boundsBuilder.include(it) }
-        viewModel.currentDestination?.let { boundsBuilder.include(it) }
-        boundsBuilder.include(LatLng(pickup.lat, pickup.lon))
-        boundsBuilder.include(LatLng(dropoff.lat, dropoff.lon))
-        try {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 120))
-        } catch (e: Exception) {
-            Log.w(TAG, "Could not fit bounds", e)
+        // Fit camera to route (only on initial route, not dropoff re-selection)
+        if (fitCamera) {
+            val boundsBuilder = LatLngBounds.builder()
+            viewModel.userLocation?.let { boundsBuilder.include(it) }
+            viewModel.currentDestination?.let { boundsBuilder.include(it) }
+            boundsBuilder.include(LatLng(pickup.lat, pickup.lon))
+            boundsBuilder.include(LatLng(dropoff.lat, dropoff.lon))
+            try {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 120))
+            } catch (e: Exception) {
+                Log.w(TAG, "Could not fit bounds", e)
+            }
         }
 
         // Update bottom sheet
