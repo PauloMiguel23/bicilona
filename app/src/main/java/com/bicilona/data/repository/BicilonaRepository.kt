@@ -77,38 +77,18 @@ class BicilonaRepository {
             val pickupLon = pickupStation.lon
             val destLat = destination.latitude
             val destLon = destination.longitude
-            val pickupStr = "${pickupLat},${pickupLon}"
-            val destStr2 = "${destLat},${destLon}"
 
-            // Walking ~80m/min, cycling ~250m/min — used only for initial ranking
+            // Walking ~80m/min, cycling ~250m/min
             val walkSpeed = 80.0
             val bikeSpeed = 250.0
 
-            // Take top 5 candidates by estimated time, then fetch real directions
-            val candidates = stations
+            stations
                 .filter { it.isOperational && it.docksAvailable > 0 }
-                .sortedBy { station ->
+                .minByOrNull { station ->
                     val rideMeters = LocationUtils.distanceMeters(pickupLat, pickupLon, station.lat, station.lon)
                     val walkMeters = LocationUtils.distanceMeters(station.lat, station.lon, destLat, destLon)
                     (rideMeters / bikeSpeed) + (walkMeters / walkSpeed)
-                }
-                .take(5)
-
-            if (candidates.isEmpty()) throw NoSuchElementException("No dropoff station with available docks found")
-
-            // Fetch real directions for each candidate in parallel
-            val candidateResults = candidates.map { station ->
-                val stationStr = "${station.lat},${station.lon}"
-                async {
-                    val ride = fetchDirections(pickupStr, stationStr, "bicycling")
-                    val walk = fetchDirections(stationStr, destStr2, "walking")
-                    val totalSeconds = (ride?.durationSeconds ?: Int.MAX_VALUE) +
-                        (walk?.durationSeconds ?: Int.MAX_VALUE)
-                    station to totalSeconds
-                }
-            }.map { it.await() }
-
-            candidateResults.minByOrNull { it.second }?.first ?: candidates.first()
+                } ?: throw NoSuchElementException("No dropoff station with available docks found")
         }
 
         val pickupLatLng = "${pickupStation.lat},${pickupStation.lon}"
