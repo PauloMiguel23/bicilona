@@ -71,12 +71,25 @@ class BicilonaRepository {
                 LocationUtils.distanceMeters(origin.latitude, origin.longitude, it.lat, it.lon)
             } ?: throw NoSuchElementException("No pickup station with your preferred bike type found")
 
-        // Use override dropoff if provided, otherwise find nearest with free docks
-        val dropoffStation = overrideDropoff ?: stations
-            .filter { it.isOperational && it.docksAvailable > 0 }
-            .minByOrNull {
-                LocationUtils.distanceMeters(destination.latitude, destination.longitude, it.lat, it.lon)
-            } ?: throw NoSuchElementException("No dropoff station with available docks found")
+        // Use override dropoff if provided, otherwise find the one minimizing total journey time
+        val dropoffStation = overrideDropoff ?: run {
+            val pickupLat = pickupStation.lat
+            val pickupLon = pickupStation.lon
+            val destLat = destination.latitude
+            val destLon = destination.longitude
+
+            // Walking ~80m/min, cycling ~250m/min
+            val walkSpeed = 80.0  // meters per minute
+            val bikeSpeed = 250.0 // meters per minute
+
+            stations
+                .filter { it.isOperational && it.docksAvailable > 0 }
+                .minByOrNull { station ->
+                    val rideMeters = LocationUtils.distanceMeters(pickupLat, pickupLon, station.lat, station.lon)
+                    val walkMeters = LocationUtils.distanceMeters(station.lat, station.lon, destLat, destLon)
+                    (rideMeters / bikeSpeed) + (walkMeters / walkSpeed)
+                } ?: throw NoSuchElementException("No dropoff station with available docks found")
+        }
 
         val pickupLatLng = "${pickupStation.lat},${pickupStation.lon}"
         val dropoffLatLng = "${dropoffStation.lat},${dropoffStation.lon}"
