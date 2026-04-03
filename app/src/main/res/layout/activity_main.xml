@@ -764,13 +764,20 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Search radius -->
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Search Radius" android:textSize="14sp" android:textStyle="bold"
-            android:textColor="@color/bicing_dark" android:paddingBottom="8dp" />
-
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="How many blocks around you to show stations"
-            android:textSize="12sp" android:textColor="#757575" android:paddingBottom="12dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="8dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Search Radius" android:textSize="14sp" android:textStyle="bold"
+                android:textColor="@color/bicing_dark" />
+            <ImageButton android:id="@+id/btnHelpRadius"
+                android:layout_width="28dp" android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_help"
+                android:scaleType="centerInside"
+                android:contentDescription="Help"
+                app:tint="#BDBDBD" />
+        </LinearLayout>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="8dp">
@@ -802,13 +809,20 @@
             android:layout_marginVertical="16dp" android:background="#E0E0E0" />
 
         <!-- Bike type — 3-way segmented toggle -->
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Bike Type" android:textSize="14sp" android:textStyle="bold"
-            android:textColor="@color/bicing_dark" android:paddingBottom="8dp" />
-
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Station colours and route suggestions will reflect your preference"
-            android:textSize="12sp" android:textColor="#757575" android:paddingBottom="12dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="8dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Bike Type" android:textSize="14sp" android:textStyle="bold"
+                android:textColor="@color/bicing_dark" />
+            <ImageButton android:id="@+id/btnHelpBikeType"
+                android:layout_width="28dp" android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_help"
+                android:scaleType="centerInside"
+                android:contentDescription="Help"
+                app:tint="#BDBDBD" />
+        </LinearLayout>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -833,13 +847,20 @@
             android:layout_marginVertical="16dp" android:background="#E0E0E0" />
 
         <!-- Ride Timer settings -->
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Ride Timer" android:textSize="14sp" android:textStyle="bold"
-            android:textColor="@color/bicing_dark" android:paddingBottom="8dp" />
-
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Bicing free ride is 30 min. Get a warning vibration so you know when to head to a station."
-            android:textSize="12sp" android:textColor="#757575" android:paddingBottom="12dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="8dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ride Timer" android:textSize="14sp" android:textStyle="bold"
+                android:textColor="@color/bicing_dark" />
+            <ImageButton android:id="@+id/btnHelpTimer"
+                android:layout_width="28dp" android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_help"
+                android:scaleType="centerInside"
+                android:contentDescription="Help"
+                app:tint="#BDBDBD" />
+        </LinearLayout>
 
         <!-- Warning at X minutes -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -868,15 +889,10 @@
         <!-- Auto-redirect toggle -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:gravity="center_vertical">
-            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:orientation="vertical">
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="Auto-redirect"
-                    android:textSize="13sp" android:textColor="@color/bicing_dark" />
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="Navigate to nearest station when time is low"
-                    android:textSize="11sp" android:textColor="#757575" />
-            </LinearLayout>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Auto-redirect"
+                android:textSize="13sp" android:textColor="@color/bicing_dark" />
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchRedirect"
                 android:layout_width="wrap_content"

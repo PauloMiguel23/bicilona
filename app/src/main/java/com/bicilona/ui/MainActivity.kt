@@ -282,6 +282,17 @@ class MainActivity : AppCompatActivity() {
             viewModel.resetToDefaults()
         }
 
+        // Setting help buttons
+        findViewById<View>(R.id.btnHelpRadius).setOnClickListener {
+            showSettingHelp("Search Radius", R.string.help_radius)
+        }
+        findViewById<View>(R.id.btnHelpBikeType).setOnClickListener {
+            showSettingHelp("Bike Type", R.string.help_bike_type)
+        }
+        findViewById<View>(R.id.btnHelpTimer).setOnClickListener {
+            showSettingHelp("Ride Timer", R.string.help_timer)
+        }
+
         // Version label
         try {
             val pInfo = packageManager.getPackageInfo(packageName, 0)
@@ -1335,6 +1346,14 @@ class MainActivity : AppCompatActivity() {
         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("How Bicilona works")
             .setMessage(message)
+            .setPositiveButton("Got it", null)
+            .show()
+    }
+
+    private fun showSettingHelp(title: String, messageResId: Int) {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(getString(messageResId))
             .setPositiveButton("Got it", null)
             .show()
     }
