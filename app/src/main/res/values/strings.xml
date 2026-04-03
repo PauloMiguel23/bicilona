@@ -13,4 +13,32 @@
     <string name="walk_to_pickup">Walk %s to pick up</string>
     <string name="ride_to_dropoff">Ride %s</string>
     <string name="walk_to_destination">Walk %s to destination</string>
+
+    <string name="help_text"><![CDATA[<b>Bicilona</b> helps you plan Bicing trips across Barcelona — from finding the right station to timing your ride so you don\'t get charged extra.\n
+\n
+<b>🗺️ Plan a trip</b>\n
+Search for a destination or long-press anywhere on the map. Bicilona finds the best pickup and drop-off stations to minimise your total journey time (walking + cycling + walking).\n
+\n
+<b>🟢🟠🔴 Station colours</b>\n
+Stations are colour-coded by bike availability: green (4+), orange (1–3), red (none). Grey means the station isn\'t operational. Tap any station for live bike and dock counts.\n
+\n
+<b>🟣 Alternative drop-offs</b>\n
+When a route is active, purple dots show nearby drop-off alternatives. Tap one to re-route.\n
+\n
+<b>⭐ Favourites</b>\n
+Save destinations you visit often. They appear as gold stars on the map and in the search dropdown. Tap a star to navigate there or remove it.\n
+\n
+<b>🚲 Start ride</b>\n
+Tap "Start ride ↗" to open turn-by-turn cycling directions in Google Maps and start the ride timer simultaneously.\n
+\n
+<b>⏱️ Ride timer</b>\n
+Bicing charges extra after 30 minutes (configurable in settings). The timer runs as a notification so it works with your phone in your pocket:\n
+• <b>Warning vibration</b> (2 pulses) when time is running low\n
+• <b>Urgent vibration</b> (3 pulses) at the redirect threshold\n
+• <b>Auto-redirect</b> — finds the nearest station with free docks and launches new Google Maps navigation automatically, replacing your current route\n
+\n
+The timer also syncs to your smartwatch via notification mirroring.\n
+\n
+<b>⚙️ Settings</b>\n
+Tap the gear icon to adjust search radius, bike type preference (mechanical/electric/all), and timer thresholds.]]></string>
 </resources>

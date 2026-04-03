@@ -190,6 +190,11 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.openDrawer(findViewById(R.id.settingsDrawer))
         }
 
+        // Help button
+        findViewById<View>(R.id.btnHelp).setOnClickListener {
+            showHelpDialog()
+        }
+
         // Cancel route button
         findViewById<View>(R.id.btnCancelRoute).setOnClickListener {
             cancelRoute()
@@ -1311,6 +1316,18 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.rideTimerContainer).visibility = View.GONE
         findViewById<View>(R.id.peekTimerContainer).visibility = View.GONE
         findViewById<View>(R.id.btnNavigate).visibility = View.VISIBLE
+    }
+
+    private fun showHelpDialog() {
+        val message = android.text.Html.fromHtml(
+            getString(R.string.help_text),
+            android.text.Html.FROM_HTML_MODE_COMPACT
+        )
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("How Bicilona works")
+            .setMessage(message)
+            .setPositiveButton("Got it", null)
+            .show()
     }
 
     private fun showFavoritesDropdown() {

@@ -184,6 +184,29 @@
                 app:tint="#555555" />
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Help button (top right, below settings) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnHelpCard"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="112dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/bicing_white">
+
+            <ImageButton
+                android:id="@+id/btnHelp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Help"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_help"
+                app:tint="#555555" />
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Loading spinner -->
         <ProgressBar
             android:id="@+id/progressBar"
