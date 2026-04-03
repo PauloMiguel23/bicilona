@@ -14,13 +14,9 @@
     <string name="ride_to_dropoff">Ride %s</string>
     <string name="walk_to_destination">Walk %s to destination</string>
 
-    <string name="help_text"><![CDATA[<b>Bicilona</b> plans Bicing trips in Barcelona.\n
-\n
-Search or long-press to set a destination. The app finds the best pickup and drop-off stations, shows a walk → ride → walk route, and launches Google Maps navigation.\n
-\n
-Tap ⚙️ to adjust search radius, bike type, and ride timer. Tap ⭐ on the map to manage your favourites.]]></string>
+    <string name="help_text"><![CDATA[<b>Bicilona</b> plans Bicing trips in Barcelona.<br/><br/>Search or long-press to set a destination. The app finds the best pickup and drop-off stations, shows a walk → ride → walk route, and launches Google Maps navigation.<br/><br/>Tap ⚙️ to adjust search radius, bike type, and ride timer. Tap ⭐ on the map to manage your favourites.]]></string>
 
-    <string name="help_radius">How many blocks around you to search for stations. The blue circle on the map shows this area. Also controls where drop-off alternatives (purple dots) appear near your destination.</string>
+    <string name="help_radius">How many blocks around you to search for stations. The blue circle on the map shows this area.\n\nAlso controls where drop-off alternatives (purple dots) appear near your destination.</string>
     <string name="help_bike_type">Filter stations by bike type. Station dot colours and route suggestions update to reflect your preference.\n\nAll = mechanical + electric\n⚙️ = mechanical only\n⚡ = electric only</string>
     <string name="help_timer">Bicing free rides are 30 minutes. The timer runs as a notification (works in your pocket) and vibrates your phone at the warning time.\n\nIf auto-redirect is on, it wakes your phone and launches Google Maps navigation to the nearest station with free docks — syncs to your watch too.</string>
 </resources>

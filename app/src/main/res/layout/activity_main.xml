@@ -771,12 +771,11 @@
                 android:text="Search Radius" android:textSize="14sp" android:textStyle="bold"
                 android:textColor="@color/bicing_dark" />
             <ImageButton android:id="@+id/btnHelpRadius"
-                android:layout_width="28dp" android:layout_height="28dp"
+                android:layout_width="20dp" android:layout_height="20dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_help"
-                android:scaleType="centerInside"
-                android:contentDescription="Help"
-                app:tint="#BDBDBD" />
+                android:src="@drawable/ic_info_circle"
+                android:scaleType="fitCenter"
+                android:contentDescription="Help" />
         </LinearLayout>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -816,12 +815,11 @@
                 android:text="Bike Type" android:textSize="14sp" android:textStyle="bold"
                 android:textColor="@color/bicing_dark" />
             <ImageButton android:id="@+id/btnHelpBikeType"
-                android:layout_width="28dp" android:layout_height="28dp"
+                android:layout_width="20dp" android:layout_height="20dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_help"
-                android:scaleType="centerInside"
-                android:contentDescription="Help"
-                app:tint="#BDBDBD" />
+                android:src="@drawable/ic_info_circle"
+                android:scaleType="fitCenter"
+                android:contentDescription="Help" />
         </LinearLayout>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -854,12 +852,11 @@
                 android:text="Ride Timer" android:textSize="14sp" android:textStyle="bold"
                 android:textColor="@color/bicing_dark" />
             <ImageButton android:id="@+id/btnHelpTimer"
-                android:layout_width="28dp" android:layout_height="28dp"
+                android:layout_width="20dp" android:layout_height="20dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_help"
-                android:scaleType="centerInside"
-                android:contentDescription="Help"
-                app:tint="#BDBDBD" />
+                android:src="@drawable/ic_info_circle"
+                android:scaleType="fitCenter"
+                android:contentDescription="Help" />
         </LinearLayout>
 
         <!-- Warning at X minutes -->
