@@ -1283,7 +1283,9 @@ class MainActivity : AppCompatActivity() {
             addAction(RideTimerService.BROADCAST_REDIRECT)
             addAction(RideTimerService.BROADCAST_FINISHED)
         }
-        registerReceiver(timerReceiver, filter, RECEIVER_NOT_EXPORTED)
+        androidx.core.content.ContextCompat.registerReceiver(
+            this, timerReceiver, filter, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         // Start foreground service
         val serviceIntent = Intent(this, RideTimerService::class.java).apply {
