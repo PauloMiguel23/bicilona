@@ -258,11 +258,15 @@ class MainActivity : AppCompatActivity() {
         }
         etDestination.setAdapter(dropdownAdapter)
 
-        // Show favorites when field gets focus with empty text
+        // Show favorites when field gets focus
         etDestination.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && etDestination.text.isNullOrBlank() && currentFavorites.isNotEmpty()) {
-                dropdownAdapter.showFavoritesOnly(currentFavorites)
-                etDestination.showDropDown()
+            if (hasFocus && currentFavorites.isNotEmpty()) {
+                val query = etDestination.text?.toString()?.trim() ?: ""
+                val filtered = filterFavorites(query)
+                if (filtered.isNotEmpty()) {
+                    dropdownAdapter.showFavoritesOnly(filtered)
+                    etDestination.showDropDown()
+                }
             }
         }
 
@@ -274,10 +278,20 @@ class MainActivity : AppCompatActivity() {
                 val query = s?.toString()?.trim() ?: ""
                 searchRunnable?.let { searchHandler.removeCallbacks(it) }
                 if (query.length >= 2) {
+                    // Show matching favorites immediately, then search for places
+                    val filteredFavs = filterFavorites(query)
+                    dropdownAdapter.setData(filteredFavs, currentPredictions)
                     searchRunnable = Runnable { searchPlaces(query) }
                     searchHandler.postDelayed(searchRunnable!!, 300)
                 } else if (query.isEmpty() && currentFavorites.isNotEmpty()) {
                     dropdownAdapter.showFavoritesOnly(currentFavorites)
+                    etDestination.showDropDown()
+                } else if (query.length == 1) {
+                    val filteredFavs = filterFavorites(query)
+                    if (filteredFavs.isNotEmpty()) {
+                        dropdownAdapter.showFavoritesOnly(filteredFavs)
+                        etDestination.showDropDown()
+                    }
                 }
             }
         })
@@ -749,7 +763,8 @@ class MainActivity : AppCompatActivity() {
             .addOnSuccessListener { response ->
                 Log.d(TAG, "Places search for '$query': ${response.autocompletePredictions.size} results")
                 currentPredictions = response.autocompletePredictions
-                dropdownAdapter.setData(currentFavorites, currentPredictions)
+                val filteredFavs = filterFavorites(query)
+                dropdownAdapter.setData(filteredFavs, currentPredictions)
                 if (dropdownAdapter.count > 0) {
                     etDestination.showDropDown()
                 }
@@ -861,6 +876,11 @@ class MainActivity : AppCompatActivity() {
     private fun hideKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(etDestination.windowToken, 0)
+    }
+
+    private fun filterFavorites(query: String): List<FavoritePlace> {
+        if (query.isBlank()) return currentFavorites
+        return currentFavorites.filter { it.name.contains(query, ignoreCase = true) }
     }
 
     private fun isCurrentDestinationFavorite(): Boolean {
