@@ -364,7 +364,13 @@ class MainActivity : AppCompatActivity() {
         // Tap on station marker → toggle pickup, select dropoff, or show info
         googleMap.setOnMarkerClickListener { marker ->
             val station = marker.tag as? BicilonaStation
-            if (station != null && viewModel.route.value != null) {
+            val favorite = marker.tag as? FavoritePlace
+
+            if (favorite != null) {
+                // Tapped a favorite star — show options
+                showFavoriteOptionsDialog(favorite)
+                true
+            } else if (station != null && viewModel.route.value != null) {
                 // Route is active — check if it's a nearby dropoff alternative
                 val isNearbyDropoff = nearbyDropoffMarkers.any { it == marker }
                 if (isNearbyDropoff) {
@@ -579,6 +585,7 @@ class MainActivity : AppCompatActivity() {
                     .zIndex(0.5f)
                     .title("⭐ ${fav.name}")
             )
+            marker?.tag = fav
             if (marker != null) {
                 favoriteMarkers.add(marker)
             }
@@ -891,6 +898,25 @@ class MainActivity : AppCompatActivity() {
     // ════════════════════════════════════════
     // Favorites dialog
     // ════════════════════════════════════════
+
+    private fun showFavoriteOptionsDialog(favorite: FavoritePlace) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("⭐ ${favorite.name}")
+            .setItems(arrayOf("🗺️ Set as destination", "🗑️ Remove from favorites")) { _, which ->
+                when (which) {
+                    0 -> {
+                        val latLng = LatLng(favorite.lat, favorite.lon)
+                        etDestination.setText(favorite.name)
+                        setDestination(latLng)
+                    }
+                    1 -> {
+                        viewModel.deleteFavorite(favorite)
+                        Toast.makeText(this, "Removed ⭐ ${favorite.name}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .show()
+    }
 
     private fun showSaveFavoriteDialog(destination: LatLng) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_save_favorite, null)
