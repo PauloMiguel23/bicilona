@@ -965,6 +965,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDestination(latLng: LatLng) {
+        etDestination.dismissDropDown()
+        etDestination.clearFocus()
+        hideKeyboard()
         viewModel.findRoute(latLng)
         updateSaveFavoriteButton()
     }
