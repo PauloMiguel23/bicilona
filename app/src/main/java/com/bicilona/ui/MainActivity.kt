@@ -173,7 +173,9 @@ class MainActivity : AppCompatActivity() {
         // Save favorite button
         findViewById<View>(R.id.btnSaveFavorite).setOnClickListener {
             val dest = viewModel.currentDestination ?: return@setOnClickListener
-            showSaveFavoriteDialog(dest)
+            if (!isCurrentDestinationFavorite()) {
+                showSaveFavoriteDialog(dest)
+            }
         }
 
         // Navigate button
@@ -455,6 +457,7 @@ class MainActivity : AppCompatActivity() {
             if (route != null) {
                 val isReRoute = routePolylines.isNotEmpty()
                 showRoute(route, fitCamera = !isReRoute)
+                updateSaveFavoriteButton()
             } else {
                 clearRouteFromMap()
                 bottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
@@ -488,6 +491,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.favorites.observe(this) { favs ->
             currentFavorites = favs
+            updateSaveFavoriteButton()
         }
 
         viewModel.nearbyDropoffs.observe(this) { dropoffs ->
@@ -852,6 +856,26 @@ class MainActivity : AppCompatActivity() {
     private fun hideKeyboard() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(etDestination.windowToken, 0)
+    }
+
+    private fun isCurrentDestinationFavorite(): Boolean {
+        val dest = viewModel.currentDestination ?: return false
+        return currentFavorites.any { fav ->
+            Math.abs(fav.lat - dest.latitude) < 0.0001 && Math.abs(fav.lon - dest.longitude) < 0.0001
+        }
+    }
+
+    private fun updateSaveFavoriteButton() {
+        val btn = findViewById<MaterialButton>(R.id.btnSaveFavorite)
+        if (isCurrentDestinationFavorite()) {
+            btn.text = "⭐ Saved"
+            btn.alpha = 0.5f
+            btn.isClickable = false
+        } else {
+            btn.text = "⭐ Save"
+            btn.alpha = 1f
+            btn.isClickable = true
+        }
     }
 
     override fun onDestroy() {
