@@ -178,6 +178,13 @@ class MainActivity : AppCompatActivity() {
         tvBlockCount = findViewById(R.id.tvBlockCount)
         tvBlockDistance = findViewById(R.id.tvBlockDistance)
 
+        // My location button
+        findViewById<View>(R.id.btnMyLocation).setOnClickListener {
+            viewModel.userLocation?.let { loc ->
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 15f))
+            }
+        }
+
         // Settings gear button
         findViewById<View>(R.id.btnSettings).setOnClickListener {
             drawerLayout.openDrawer(findViewById(R.id.settingsDrawer))
@@ -412,6 +419,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupMap() {
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(41.3874, 2.1686), 14f))
         googleMap.uiSettings.isMapToolbarEnabled = false
+        googleMap.uiSettings.isMyLocationButtonEnabled = false
 
         // Custom info window
         googleMap.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {

@@ -138,6 +138,29 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- My location button (top right) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btnMyLocationCard"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|end"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/bicing_white">
+
+            <ImageButton
+                android:id="@+id/btnMyLocation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="My location"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_mylocation"
+                app:tint="#555555" />
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Settings gear (top right, below my-location button) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnSettingsCard"
