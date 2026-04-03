@@ -258,16 +258,15 @@ class MainActivity : AppCompatActivity() {
         }
         etDestination.setAdapter(dropdownAdapter)
 
-        // Show favorites when field gets focus
+        // Show favorites when field is tapped or gains focus
+        etDestination.threshold = 0
+
         etDestination.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && currentFavorites.isNotEmpty()) {
-                val query = etDestination.text?.toString()?.trim() ?: ""
-                val filtered = filterFavorites(query)
-                if (filtered.isNotEmpty()) {
-                    dropdownAdapter.showFavoritesOnly(filtered)
-                    etDestination.showDropDown()
-                }
-            }
+            if (hasFocus) showFavoritesDropdown()
+        }
+
+        etDestination.setOnClickListener {
+            showFavoritesDropdown()
         }
 
         // Text changed → autocomplete
@@ -881,6 +880,15 @@ class MainActivity : AppCompatActivity() {
     private fun filterFavorites(query: String): List<FavoritePlace> {
         if (query.isBlank()) return currentFavorites
         return currentFavorites.filter { it.name.contains(query, ignoreCase = true) }
+    }
+
+    private fun showFavoritesDropdown() {
+        val query = etDestination.text?.toString()?.trim() ?: ""
+        val filtered = filterFavorites(query)
+        if (filtered.isNotEmpty()) {
+            dropdownAdapter.showFavoritesOnly(filtered)
+            etDestination.post { etDestination.showDropDown() }
+        }
     }
 
     private fun isCurrentDestinationFavorite(): Boolean {
