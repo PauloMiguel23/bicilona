@@ -227,8 +227,9 @@ class MainActivity : AppCompatActivity() {
         starIcon = createStarIcon()
     }
 
-    // Radius circle overlay
+    // Radius circle overlays
     private var radiusCircle: com.google.android.gms.maps.model.Circle? = null
+    private var destinationRadiusCircle: com.google.android.gms.maps.model.Circle? = null
 
     private fun initSettingsDrawer() {
         // Block radius controls
@@ -891,6 +892,8 @@ class MainActivity : AppCompatActivity() {
         routePolylines.clear()
         pulseAnimator?.stop()
         pulseAnimator = null
+        destinationRadiusCircle?.remove()
+        destinationRadiusCircle = null
     }
 
     /**
@@ -1121,6 +1124,26 @@ class MainActivity : AppCompatActivity() {
                 .strokeWidth(2f)
                 .strokeColor(Color.parseColor("#442196F3"))
                 .fillColor(Color.parseColor("#112196F3"))
+        )
+
+        updateDestinationRadiusCircle()
+    }
+
+    private fun updateDestinationRadiusCircle() {
+        if (!::googleMap.isInitialized) return
+        destinationRadiusCircle?.remove()
+        destinationRadiusCircle = null
+
+        val dest = viewModel.currentDestination ?: return
+        val radius = viewModel.radiusMeters
+
+        destinationRadiusCircle = googleMap.addCircle(
+            com.google.android.gms.maps.model.CircleOptions()
+                .center(dest)
+                .radius(radius)
+                .strokeWidth(2f)
+                .strokeColor(Color.parseColor("#449C27B0"))
+                .fillColor(Color.parseColor("#119C27B0"))
         )
     }
 
