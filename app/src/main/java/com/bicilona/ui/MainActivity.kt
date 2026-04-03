@@ -913,7 +913,7 @@ class MainActivity : AppCompatActivity() {
                 currentPredictions = response.autocompletePredictions
                 val filteredFavs = filterFavorites(query)
                 dropdownAdapter.setData(filteredFavs, currentPredictions)
-                if (dropdownAdapter.count > 0) {
+                if (dropdownAdapter.count > 0 && !suppressDropdown) {
                     etDestination.showDropDown()
                 }
             }
@@ -972,6 +972,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setDestination(latLng: LatLng) {
         suppressDropdown = true
+        searchRunnable?.let { searchHandler.removeCallbacks(it) }
         etDestination.dismissDropDown()
         etDestination.clearFocus()
         hideKeyboard()
@@ -1067,6 +1068,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showFavoritesDropdown() {
+        if (suppressDropdown) return
         val query = etDestination.text?.toString()?.trim() ?: ""
         val filtered = filterFavorites(query)
         if (filtered.isNotEmpty()) {
