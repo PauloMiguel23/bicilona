@@ -210,7 +210,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Navigate button — launches turn-by-turn to dropoff station
+        // Start ride — launches Google Maps navigation AND starts the timer
         findViewById<View>(R.id.btnNavigate).setOnClickListener {
             val route = viewModel.route.value ?: return@setOnClickListener
             LocationUtils.launchGoogleMapsNavigation(
@@ -218,10 +218,6 @@ class MainActivity : AppCompatActivity() {
                 route.dropoffStation.lat,
                 route.dropoffStation.lon
             )
-        }
-
-        // Start ride timer
-        findViewById<View>(R.id.btnStartRide).setOnClickListener {
             startRideTimer()
         }
 
@@ -1212,8 +1208,8 @@ class MainActivity : AppCompatActivity() {
         hasWarned = false
         hasRedirected = false
 
-        // Show timer UI, hide start button
-        findViewById<View>(R.id.btnStartRide).visibility = View.GONE
+        // Show timer UI, hide navigate button
+        findViewById<View>(R.id.btnNavigate).visibility = View.GONE
         findViewById<View>(R.id.rideTimerContainer).visibility = View.VISIBLE
         findViewById<View>(R.id.peekTimerContainer).visibility = View.VISIBLE
 
@@ -1311,10 +1307,10 @@ class MainActivity : AppCompatActivity() {
         hasWarned = false
         hasRedirected = false
 
-        // Hide timer UI, show start button
+        // Hide timer UI, show navigate button
         findViewById<View>(R.id.rideTimerContainer).visibility = View.GONE
         findViewById<View>(R.id.peekTimerContainer).visibility = View.GONE
-        findViewById<View>(R.id.btnStartRide).visibility = View.VISIBLE
+        findViewById<View>(R.id.btnNavigate).visibility = View.VISIBLE
     }
 
     private fun showFavoritesDropdown() {

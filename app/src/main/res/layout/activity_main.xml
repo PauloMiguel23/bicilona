@@ -629,24 +629,12 @@
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_weight="2"
-                        android:text="🗺️  Google Maps"
+                        android:text="🚲  Start ride"
                         android:textSize="14sp"
                         android:textAllCaps="false"
                         app:cornerRadius="12dp"
-                        app:backgroundTint="@color/bicing_blue" />
+                        app:backgroundTint="@color/bicing_green" />
                 </LinearLayout>
-
-                <!-- Start ride button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnStartRide"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="8dp"
-                    android:text="🚲  Start ride timer"
-                    android:textSize="15sp"
-                    android:textAllCaps="false"
-                    app:cornerRadius="12dp"
-                    app:backgroundTint="@color/bicing_green" />
 
                 <!-- Ride timer (hidden until ride starts) -->
                 <LinearLayout
