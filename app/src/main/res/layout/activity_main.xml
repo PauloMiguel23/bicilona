@@ -680,7 +680,8 @@
         android:orientation="vertical"
         android:background="@color/bicing_white"
         android:elevation="8dp"
-        android:padding="24dp">
+        android:paddingTop="24dp"
+        android:paddingHorizontal="24dp">
 
         <TextView
             android:layout_width="match_parent"
@@ -690,6 +691,18 @@
             android:textStyle="bold"
             android:textColor="@color/bicing_dark"
             android:paddingBottom="16dp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
         <!-- Station stats summary -->
         <com.google.android.material.card.MaterialCardView
@@ -889,16 +902,16 @@
             android:insetTop="0dp"
             android:insetBottom="0dp" />
 
-        <!-- Spacer to push version to bottom -->
-        <View android:layout_width="0dp" android:layout_height="0dp"
-            android:layout_weight="1" />
+            </LinearLayout>
+        </ScrollView>
 
-        <!-- Version -->
+        <!-- Version (pinned to bottom) -->
         <TextView
             android:id="@+id/tvVersion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:paddingVertical="12dp"
             android:textSize="11sp"
             android:textColor="#BDBDBD"
             android:text="Bicilona v1.0" />
