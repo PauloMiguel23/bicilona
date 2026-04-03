@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     private var dropoffMarker: Marker? = null
     private var destinationMarker: Marker? = null
     private val nearbyDropoffMarkers = mutableListOf<Marker>()
+    private val favoriteMarkers = mutableListOf<Marker>()
     private val routePolylines = mutableListOf<Polyline>()
     private var pulseAnimator: PulseAnimator? = null
 
@@ -98,6 +99,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dotGray: BitmapDescriptor
     private lateinit var dotBlue: BitmapDescriptor
     private lateinit var dotPurple: BitmapDescriptor
+    private lateinit var starIcon: BitmapDescriptor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -203,6 +205,7 @@ class MainActivity : AppCompatActivity() {
         dotGray = MarkerFactory.createDot(this, Color.GRAY, strokeColor = Color.WHITE)
         dotBlue = MarkerFactory.createHighlightedDot(this, Color.parseColor("#2196F3"))
         dotPurple = MarkerFactory.createHighlightedDot(this, Color.parseColor("#9C27B0"))
+        starIcon = createStarIcon()
     }
 
     private fun initSettingsDrawer() {
@@ -505,6 +508,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.favorites.observe(this) { favs ->
             currentFavorites = favs
             updateSaveFavoriteButton()
+            updateFavoriteMarkers()
         }
 
         viewModel.nearbyDropoffs.observe(this) { dropoffs ->
@@ -558,6 +562,64 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun updateFavoriteMarkers() {
+        if (!::googleMap.isInitialized) return
+
+        favoriteMarkers.forEach { it.remove() }
+        favoriteMarkers.clear()
+
+        currentFavorites.forEach { fav ->
+            val marker = googleMap.addMarker(
+                MarkerOptions()
+                    .position(LatLng(fav.lat, fav.lon))
+                    .icon(starIcon)
+                    .anchor(0.5f, 0.5f)
+                    .zIndex(0.5f)
+                    .title("⭐ ${fav.name}")
+            )
+            if (marker != null) {
+                favoriteMarkers.add(marker)
+            }
+        }
+    }
+
+    private fun createStarIcon(): BitmapDescriptor {
+        val density = resources.displayMetrics.density
+        val size = (20 * density).toInt()
+        val bitmap = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bitmap)
+        val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#FFD700")
+            style = android.graphics.Paint.Style.FILL
+        }
+        val strokePaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#B8860B")
+            style = android.graphics.Paint.Style.STROKE
+            strokeWidth = 1.5f * density
+        }
+
+        val cx = size / 2f
+        val cy = size / 2f
+        val outerR = size / 2f - 1.5f * density
+        val innerR = outerR * 0.4f
+        val path = android.graphics.Path()
+        for (i in 0 until 5) {
+            val outerAngle = Math.toRadians((i * 72 - 90).toDouble())
+            val innerAngle = Math.toRadians((i * 72 + 36 - 90).toDouble())
+            val ox = cx + outerR * Math.cos(outerAngle).toFloat()
+            val oy = cy + outerR * Math.sin(outerAngle).toFloat()
+            val ix = cx + innerR * Math.cos(innerAngle).toFloat()
+            val iy = cy + innerR * Math.sin(innerAngle).toFloat()
+            if (i == 0) path.moveTo(ox, oy) else path.lineTo(ox, oy)
+            path.lineTo(ix, iy)
+        }
+        path.close()
+        canvas.drawPath(path, paint)
+        canvas.drawPath(path, strokePaint)
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     private fun updateNearbyDropoffMarkers(dropoffs: List<BicilonaStation>) {
