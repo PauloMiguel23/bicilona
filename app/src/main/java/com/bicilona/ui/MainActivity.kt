@@ -425,6 +425,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.nearestStation.observe(this) { station ->
             if (station != null && viewModel.selectedPickup.value == null) {
                 tvCurrentLocation.text = station.name
+                pulseOnStation(station)
             }
         }
 
@@ -432,10 +433,17 @@ class MainActivity : AppCompatActivity() {
             if (station != null) {
                 tvCurrentLocation.text = "📌 ${station.name}"
                 btnResetPickup.visibility = View.VISIBLE
+                pulseOnStation(station)
             } else {
                 btnResetPickup.visibility = View.GONE
                 val nearest = viewModel.nearestStation.value
                 tvCurrentLocation.text = nearest?.name ?: "Getting nearest station…"
+                if (nearest != null) {
+                    pulseOnStation(nearest)
+                } else {
+                    pulseAnimator?.stop()
+                    pulseAnimator = null
+                }
             }
             // Re-render markers to highlight selected pickup
             viewModel.visibleStations.value?.let { updateStationMarkers(it) }
@@ -606,8 +614,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Pulse on pickup
-        pulseAnimator = PulseAnimator(this, googleMap)
-        pulseAnimator?.start(LatLng(pickup.lat, pickup.lon), Color.parseColor("#2196F3"))
+        pulseOnStation(pickup)
 
         // Draw polylines
         route.walkToPickupPoints?.let { points ->
@@ -687,6 +694,17 @@ class MainActivity : AppCompatActivity() {
         routePolylines.clear()
         pulseAnimator?.stop()
         pulseAnimator = null
+    }
+
+    /**
+     * Pulse on a station (nearest or manually selected pickup).
+     * Safe to call before map is ready — will no-op.
+     */
+    private fun pulseOnStation(station: BicilonaStation) {
+        if (!::googleMap.isInitialized) return
+        pulseAnimator?.stop()
+        pulseAnimator = PulseAnimator(this, googleMap)
+        pulseAnimator?.start(LatLng(station.lat, station.lon), Color.parseColor("#2196F3"))
     }
 
     private fun cancelRoute() {
