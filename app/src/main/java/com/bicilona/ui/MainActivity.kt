@@ -841,12 +841,12 @@ class MainActivity : AppCompatActivity() {
         val placesClient = Places.createClient(this)
         val request = FetchPlaceRequest.newInstance(
             prediction.placeId,
-            listOf(Place.Field.LAT_LNG, Place.Field.NAME)
+            listOf(Place.Field.LOCATION, Place.Field.DISPLAY_NAME)
         )
 
         placesClient.fetchPlace(request)
             .addOnSuccessListener { response ->
-                val latLng = response.place.latLng
+                val latLng = response.place.location
                 if (latLng != null) {
                     etDestination.setText(prediction.getPrimaryText(null))
                     setDestination(latLng)
@@ -924,7 +924,7 @@ class MainActivity : AppCompatActivity() {
         val result = mutableListOf<T>()
         for (i in 0 until viewGroup.childCount) {
             val child = viewGroup.getChildAt(i)
-            if (clazz.isInstance(child)) result.add(clazz.cast(child))
+            if (clazz.isInstance(child)) result.add(clazz.cast(child)!!)
             if (child is android.view.ViewGroup) result.addAll(findViewsOfType(child, clazz))
         }
         return result
