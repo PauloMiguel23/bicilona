@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
             .getApplicationInfo(packageName, PackageManager.GET_META_DATA)
             .metaData?.getString("com.google.android.geo.API_KEY") ?: ""
         if (apiKey.isNotBlank() && !Places.isInitialized()) {
-            Places.initialize(applicationContext, apiKey)
+            Places.initializeWithNewPlacesApiEnabled(applicationContext, apiKey)
         }
         viewModel.setMapsApiKey(apiKey)
 
@@ -729,7 +729,10 @@ class MainActivity : AppCompatActivity() {
     // ════════════════════════════════════════
 
     private fun searchPlaces(query: String) {
-        if (!Places.isInitialized()) return
+        if (!Places.isInitialized()) {
+            Log.w(TAG, "Places SDK not initialized, skipping search")
+            return
+        }
 
         val placesClient = Places.createClient(this)
         val bounds = RectangularBounds.newInstance(
@@ -744,6 +747,7 @@ class MainActivity : AppCompatActivity() {
 
         placesClient.findAutocompletePredictions(request)
             .addOnSuccessListener { response ->
+                Log.d(TAG, "Places search for '$query': ${response.autocompletePredictions.size} results")
                 currentPredictions = response.autocompletePredictions
                 dropdownAdapter.setData(currentFavorites, currentPredictions)
                 if (dropdownAdapter.count > 0) {
@@ -751,7 +755,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "Place autocomplete failed", e)
+                Log.w(TAG, "Place autocomplete failed for '$query'", e)
             }
     }
 
