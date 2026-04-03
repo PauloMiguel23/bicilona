@@ -805,6 +805,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setDestination(latLng: LatLng) {
         viewModel.findRoute(latLng)
+        updateSaveFavoriteButton()
     }
 
     // ════════════════════════════════════════
