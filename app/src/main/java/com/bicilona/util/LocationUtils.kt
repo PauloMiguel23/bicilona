@@ -77,4 +77,27 @@ object LocationUtils {
             context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, uri))
         }
     }
+
+    /**
+     * Launch Google Maps turn-by-turn navigation directly to a destination.
+     * Uses the google.navigation: URI which auto-starts navigation,
+     * replacing any current navigation session without a confirmation screen.
+     */
+    fun launchGoogleMapsNavigation(
+        context: android.content.Context,
+        destLat: Double,
+        destLon: Double
+    ) {
+        val uri = android.net.Uri.parse("google.navigation:q=$destLat,$destLon&mode=b")
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.google.android.apps.maps")
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            // Fallback to directions URL
+            launchGoogleMapsDirections(context, destLat, destLon, destLat, destLon)
+        }
+    }
 }

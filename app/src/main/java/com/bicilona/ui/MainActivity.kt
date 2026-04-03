@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.os.CountDownTimer
+import android.content.BroadcastReceiver
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
@@ -26,6 +28,7 @@ import com.bicilona.R
 import com.bicilona.data.db.FavoritePlace
 import com.bicilona.data.model.BicilonaRoute
 import com.bicilona.data.model.BicilonaStation
+import com.bicilona.service.RideTimerService
 import com.bicilona.util.LocationUtils
 import com.bicilona.util.MarkerFactory
 import com.bicilona.util.PulseAnimator
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvDestWalkInfo: TextView
 
     // Ride timer
-    private var rideTimer: CountDownTimer? = null
+    private var timerReceiver: BroadcastReceiver? = null
     private var hasWarned = false
     private var hasRedirected = false
 
@@ -210,13 +213,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Navigate button
+        // Navigate button — launches turn-by-turn to dropoff station
         findViewById<View>(R.id.btnNavigate).setOnClickListener {
             val route = viewModel.route.value ?: return@setOnClickListener
-            LocationUtils.launchGoogleMapsDirections(
+            LocationUtils.launchGoogleMapsNavigation(
                 this,
-                route.pickupStation.lat,
-                route.pickupStation.lon,
                 route.dropoffStation.lat,
                 route.dropoffStation.lon
             )
@@ -1208,7 +1209,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun startRideTimer() {
         val limitMinutes = viewModel.timeLimitMinutes.value ?: 30
-        val totalMillis = limitMinutes * 60 * 1000L
+        val warningMinutes = viewModel.warningMinutes.value ?: 5
+        val redirectMinutes = viewModel.redirectMinutes.value ?: 1
 
         hasWarned = false
         hasRedirected = false
@@ -1222,71 +1224,102 @@ class MainActivity : AppCompatActivity() {
         tvCountdown.setTextColor(Color.parseColor("#4CAF50"))
         tvLabel.text = "Time remaining"
 
-        rideTimer?.cancel()
-        rideTimer = object : CountDownTimer(totalMillis, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                val totalSecs = (millisUntilFinished / 1000).toInt()
-                val mins = totalSecs / 60
-                val secs = totalSecs % 60
-                tvCountdown.text = String.format("%02d:%02d", mins, secs)
+        // Request notification permission (Android 13+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 2001)
+            }
+        }
 
-                val warningThreshold = (viewModel.warningMinutes.value ?: 5) * 60
-                val redirectThreshold = (viewModel.redirectMinutes.value ?: 1) * 60
+        // Register broadcast receiver for service updates
+        unregisterTimerReceiver()
+        timerReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
+                when (intent?.action) {
+                    RideTimerService.BROADCAST_TICK -> {
+                        val secsLeft = intent.getIntExtra(RideTimerService.EXTRA_SECONDS_LEFT, 0)
+                        val totalSecs = intent.getIntExtra(RideTimerService.EXTRA_TOTAL_SECONDS, 0)
+                        val mins = secsLeft / 60
+                        val secs = secsLeft % 60
+                        tvCountdown.text = String.format("%02d:%02d", mins, secs)
 
-                // Color transitions
-                when {
-                    totalSecs <= redirectThreshold -> {
+                        val warningThreshold = (viewModel.warningMinutes.value ?: 5) * 60
+                        val redirectThreshold = (viewModel.redirectMinutes.value ?: 1) * 60
+
+                        when {
+                            secsLeft <= redirectThreshold -> {
+                                tvCountdown.setTextColor(Color.parseColor("#E30613"))
+                                tvLabel.text = "⚠️ Return bike NOW!"
+                            }
+                            secsLeft <= warningThreshold -> {
+                                tvCountdown.setTextColor(Color.parseColor("#FF9800"))
+                                tvLabel.text = "⏰ Return bike soon"
+                            }
+                        }
+                    }
+                    RideTimerService.BROADCAST_WARNING -> {
+                        // Service already vibrated; show toast as backup
+                        Toast.makeText(this@MainActivity,
+                            "⏰ Warning — find a station!", Toast.LENGTH_LONG).show()
+                    }
+                    RideTimerService.BROADCAST_REDIRECT -> {
+                        autoRedirectToNearestStation()
+                    }
+                    RideTimerService.BROADCAST_FINISHED -> {
+                        tvCountdown.text = "00:00"
                         tvCountdown.setTextColor(Color.parseColor("#E30613"))
-                        tvLabel.text = "⚠️ Return bike NOW!"
-                    }
-                    totalSecs <= warningThreshold -> {
-                        tvCountdown.setTextColor(Color.parseColor("#FF9800"))
-                        tvLabel.text = "⏰ Return bike soon"
+                        tvLabel.text = "⚠️ Time's up — you're being charged!"
+                        Toast.makeText(this@MainActivity,
+                            "🚨 Free ride limit exceeded!", Toast.LENGTH_LONG).show()
                     }
                 }
-
-                // Warning alert
-                if (!hasWarned && totalSecs <= warningThreshold) {
-                    hasWarned = true
-                    Toast.makeText(
-                        this@MainActivity,
-                        "⏰ ${mins} min left — find a station!",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                // Auto-redirect
-                if (!hasRedirected && totalSecs <= redirectThreshold) {
-                    hasRedirected = true
-                    autoRedirectToNearestStation()
-                }
             }
+        }
 
-            override fun onFinish() {
-                tvCountdown.text = "00:00"
-                tvCountdown.setTextColor(Color.parseColor("#E30613"))
-                tvLabel.text = "⚠️ Time's up — you're being charged!"
-                Toast.makeText(
-                    this@MainActivity,
-                    "🚨 Free ride limit exceeded!",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }.start()
+        val filter = IntentFilter().apply {
+            addAction(RideTimerService.BROADCAST_TICK)
+            addAction(RideTimerService.BROADCAST_WARNING)
+            addAction(RideTimerService.BROADCAST_REDIRECT)
+            addAction(RideTimerService.BROADCAST_FINISHED)
+        }
+        registerReceiver(timerReceiver, filter, RECEIVER_NOT_EXPORTED)
+
+        // Start foreground service
+        val serviceIntent = Intent(this, RideTimerService::class.java).apply {
+            action = RideTimerService.ACTION_START
+            putExtra(RideTimerService.EXTRA_TIME_LIMIT_MINUTES, limitMinutes)
+            putExtra(RideTimerService.EXTRA_WARNING_MINUTES, warningMinutes)
+            putExtra(RideTimerService.EXTRA_REDIRECT_MINUTES, redirectMinutes)
+        }
+        startForegroundService(serviceIntent)
 
         // Expand bottom sheet to show timer
         bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     private fun stopRideTimer() {
-        rideTimer?.cancel()
-        rideTimer = null
+        // Stop the foreground service
+        val serviceIntent = Intent(this, RideTimerService::class.java).apply {
+            action = RideTimerService.ACTION_STOP
+        }
+        startService(serviceIntent)
+
+        unregisterTimerReceiver()
         hasWarned = false
         hasRedirected = false
 
         // Hide timer UI, show start button
         findViewById<View>(R.id.rideTimerContainer).visibility = View.GONE
         findViewById<View>(R.id.btnStartRide).visibility = View.VISIBLE
+    }
+
+    private fun unregisterTimerReceiver() {
+        timerReceiver?.let {
+            try { unregisterReceiver(it) } catch (_: Exception) {}
+        }
+        timerReceiver = null
     }
 
     private fun autoRedirectToNearestStation() {
@@ -1301,12 +1334,9 @@ class MainActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
 
-        // Open Google Maps with bicycling directions to the nearest station
-        val loc = viewModel.userLocation ?: return
-        LocationUtils.launchGoogleMapsDirections(
+        // Launch turn-by-turn navigation directly — replaces current session
+        LocationUtils.launchGoogleMapsNavigation(
             this,
-            loc.latitude,
-            loc.longitude,
             station.lat,
             station.lon
         )
@@ -1345,7 +1375,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopLocationUpdates()
-        rideTimer?.cancel()
+        unregisterTimerReceiver()
         pulseAnimator?.stop()
         searchRunnable?.let { searchHandler.removeCallbacks(it) }
     }

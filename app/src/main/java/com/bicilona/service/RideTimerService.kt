@@ -1,0 +1,249 @@
+package com.bicilona.service
+
+import android.app.*
+import android.content.Context
+import android.content.Intent
+import android.os.*
+import androidx.core.app.NotificationCompat
+import com.bicilona.R
+import com.bicilona.ui.MainActivity
+import com.bicilona.util.LocationUtils
+
+class RideTimerService : Service() {
+
+    companion object {
+        const val CHANNEL_ID = "ride_timer_channel"
+        const val NOTIFICATION_ID = 1001
+
+        const val ACTION_START = "com.bicilona.START_TIMER"
+        const val ACTION_STOP = "com.bicilona.STOP_TIMER"
+
+        const val EXTRA_TIME_LIMIT_MINUTES = "time_limit_minutes"
+        const val EXTRA_WARNING_MINUTES = "warning_minutes"
+        const val EXTRA_REDIRECT_MINUTES = "redirect_minutes"
+
+        // Broadcast actions for UI updates
+        const val BROADCAST_TICK = "com.bicilona.TIMER_TICK"
+        const val BROADCAST_WARNING = "com.bicilona.TIMER_WARNING"
+        const val BROADCAST_REDIRECT = "com.bicilona.TIMER_REDIRECT"
+        const val BROADCAST_FINISHED = "com.bicilona.TIMER_FINISHED"
+        const val EXTRA_SECONDS_LEFT = "seconds_left"
+        const val EXTRA_TOTAL_SECONDS = "total_seconds"
+
+        var isRunning = false
+            private set
+    }
+
+    private var countDownTimer: CountDownTimer? = null
+    private var hasWarned = false
+    private var hasRedirected = false
+    private var vibrator: Vibrator? = null
+    private var warningSeconds = 0
+    private var redirectSeconds = 0
+    private var totalSeconds = 0
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vm = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vm.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_START -> {
+                val timeLimitMin = intent.getIntExtra(EXTRA_TIME_LIMIT_MINUTES, 30)
+                val warningMin = intent.getIntExtra(EXTRA_WARNING_MINUTES, 5)
+                val redirectMin = intent.getIntExtra(EXTRA_REDIRECT_MINUTES, 1)
+                startTimer(timeLimitMin, warningMin, redirectMin)
+            }
+            ACTION_STOP -> {
+                stopTimer()
+            }
+        }
+        return START_NOT_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun startTimer(timeLimitMin: Int, warningMin: Int, redirectMin: Int) {
+        countDownTimer?.cancel()
+        hasWarned = false
+        hasRedirected = false
+        isRunning = true
+
+        totalSeconds = timeLimitMin * 60
+        warningSeconds = warningMin * 60
+        redirectSeconds = redirectMin * 60
+
+        val notification = buildNotification(totalSeconds, totalSeconds)
+        startForeground(NOTIFICATION_ID, notification)
+
+        countDownTimer = object : CountDownTimer(totalSeconds * 1000L, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secsLeft = (millisUntilFinished / 1000).toInt()
+                updateNotification(secsLeft, totalSeconds)
+                sendTickBroadcast(secsLeft, totalSeconds)
+
+                // Warning vibration
+                if (!hasWarned && secsLeft <= warningSeconds) {
+                    hasWarned = true
+                    vibrateWarning()
+                    sendBroadcast(Intent(BROADCAST_WARNING))
+                }
+
+                // Redirect vibration
+                if (!hasRedirected && secsLeft <= redirectSeconds) {
+                    hasRedirected = true
+                    vibrateRedirect()
+                    sendBroadcast(Intent(BROADCAST_REDIRECT))
+                }
+            }
+
+            override fun onFinish() {
+                vibrateRedirect()
+                updateNotificationFinished()
+                sendBroadcast(Intent(BROADCAST_FINISHED))
+                isRunning = false
+            }
+        }.start()
+    }
+
+    private fun stopTimer() {
+        countDownTimer?.cancel()
+        countDownTimer = null
+        isRunning = false
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    override fun onDestroy() {
+        countDownTimer?.cancel()
+        isRunning = false
+        super.onDestroy()
+    }
+
+    // ── Notifications ──────────────────────────────────────────────
+
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Ride Timer",
+            NotificationManager.IMPORTANCE_LOW  // No sound on every tick
+        ).apply {
+            description = "Shows remaining free ride time"
+            setShowBadge(false)
+        }
+        val nm = getSystemService(NotificationManager::class.java)
+        nm.createNotificationChannel(channel)
+    }
+
+    private fun buildNotification(secsLeft: Int, totalSecs: Int): Notification {
+        val mins = secsLeft / 60
+        val secs = secsLeft % 60
+        val timeStr = String.format("%02d:%02d", mins, secs)
+
+        val contentIntent = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            },
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val stopIntent = PendingIntent.getService(
+            this, 1,
+            Intent(this, RideTimerService::class.java).apply { action = ACTION_STOP },
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("🚲 Ride Timer: $timeStr")
+            .setContentText("Free ride time remaining")
+            .setContentIntent(contentIntent)
+            .addAction(0, "Stop Timer", stopIntent)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setProgress(totalSecs, totalSecs - secsLeft, false)
+            .build()
+    }
+
+    private fun updateNotification(secsLeft: Int, totalSecs: Int) {
+        val notification = buildNotification(secsLeft, totalSecs)
+        val nm = getSystemService(NotificationManager::class.java)
+        nm.notify(NOTIFICATION_ID, notification)
+    }
+
+    private fun updateNotificationFinished() {
+        // High-importance channel for the final alert
+        val alertChannel = NotificationChannel(
+            "ride_timer_alert",
+            "Ride Timer Alert",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Alert when free ride time expires"
+            enableVibration(true)
+        }
+        val nm = getSystemService(NotificationManager::class.java)
+        nm.createNotificationChannel(alertChannel)
+
+        val contentIntent = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            },
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val notification = NotificationCompat.Builder(this, "ride_timer_alert")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("🚨 Free ride time expired!")
+            .setContentText("You're now being charged extra")
+            .setContentIntent(contentIntent)
+            .setOngoing(false)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+        nm.notify(NOTIFICATION_ID, notification)
+    }
+
+    // ── Vibration ──────────────────────────────────────────────────
+
+    private fun vibrateWarning() {
+        // Two short pulses
+        val pattern = longArrayOf(0, 300, 200, 300)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator?.vibrate(pattern, -1)
+        }
+    }
+
+    private fun vibrateRedirect() {
+        // Three strong pulses — urgent
+        val pattern = longArrayOf(0, 500, 200, 500, 200, 500)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator?.vibrate(pattern, -1)
+        }
+    }
+
+    // ── Broadcasts ─────────────────────────────────────────────────
+
+    private fun sendTickBroadcast(secsLeft: Int, totalSecs: Int) {
+        sendBroadcast(Intent(BROADCAST_TICK).apply {
+            putExtra(EXTRA_SECONDS_LEFT, secsLeft)
+            putExtra(EXTRA_TOTAL_SECONDS, totalSecs)
+        })
+    }
+}
