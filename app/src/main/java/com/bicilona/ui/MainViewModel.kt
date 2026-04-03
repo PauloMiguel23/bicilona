@@ -132,6 +132,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun resetToDefaults() {
+        _blockRadius.value = DEFAULT_BLOCKS
+        prefs.edit().putInt("block_radius", DEFAULT_BLOCKS).apply()
+        _bikeTypePreference.value = BikeTypePreference.BOTH
+        prefs.edit().putInt("bike_type", BikeTypePreference.BOTH.ordinal).apply()
+        filterStations()
+    }
+
     fun loadStations() {
         viewModelScope.launch {
             _loading.value = true

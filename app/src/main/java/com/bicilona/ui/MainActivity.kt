@@ -227,6 +227,9 @@ class MainActivity : AppCompatActivity() {
         starIcon = createStarIcon()
     }
 
+    // Radius circle overlay
+    private var radiusCircle: com.google.android.gms.maps.model.Circle? = null
+
     private fun initSettingsDrawer() {
         // Block radius controls
         findViewById<MaterialButton>(R.id.btnBlockMinus).setOnClickListener {
@@ -236,26 +239,31 @@ class MainActivity : AppCompatActivity() {
             viewModel.incrementBlocks()
         }
 
-        // Bike type buttons
+        // Bike type — 3-way segmented toggle
+        val btnAll = findViewById<MaterialButton>(R.id.btnBikeAll)
         val btnMechanical = findViewById<MaterialButton>(R.id.btnMechanical)
         val btnElectric = findViewById<MaterialButton>(R.id.btnElectric)
 
+        btnAll.setOnClickListener {
+            viewModel.setBikeTypePreference(BikeTypePreference.BOTH)
+        }
         btnMechanical.setOnClickListener {
-            val current = viewModel.bikeTypePreference.value
-            if (current == BikeTypePreference.MECHANICAL_ONLY) {
-                viewModel.setBikeTypePreference(BikeTypePreference.BOTH)
-            } else {
-                viewModel.setBikeTypePreference(BikeTypePreference.MECHANICAL_ONLY)
-            }
+            viewModel.setBikeTypePreference(BikeTypePreference.MECHANICAL_ONLY)
         }
         btnElectric.setOnClickListener {
-            val current = viewModel.bikeTypePreference.value
-            if (current == BikeTypePreference.ELECTRIC_ONLY) {
-                viewModel.setBikeTypePreference(BikeTypePreference.BOTH)
-            } else {
-                viewModel.setBikeTypePreference(BikeTypePreference.ELECTRIC_ONLY)
-            }
+            viewModel.setBikeTypePreference(BikeTypePreference.ELECTRIC_ONLY)
         }
+
+        // Reset to defaults
+        findViewById<MaterialButton>(R.id.btnResetDefaults).setOnClickListener {
+            viewModel.resetToDefaults()
+        }
+
+        // Version label
+        try {
+            val pInfo = packageManager.getPackageInfo(packageName, 0)
+            findViewById<TextView>(R.id.tvVersion).text = "Bicilona v${pInfo.versionName}"
+        } catch (_: Exception) { }
     }
 
     private fun initSearch() {
@@ -468,6 +476,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.userLocation = latLng
                 viewModel.loadStations()
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                updateRadiusCircle()
             } else if (!hasInitialLocation) {
                 Log.w(TAG, "Last location is null, loading all stations")
                 viewModel.loadStations()
@@ -491,6 +500,7 @@ class MainActivity : AppCompatActivity() {
                 val location = result.lastLocation ?: return
                 val latLng = LatLng(location.latitude, location.longitude)
                 viewModel.userLocation = latLng
+                updateRadiusCircle()
 
                 if (!hasInitialLocation) {
                     hasInitialLocation = true
@@ -515,6 +525,7 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.visibleStations.observe(this) { stations ->
             updateStationMarkers(stations)
+            updateStationStats(stations)
             // Show empty state if no stations in radius (and we have a location)
             val showEmpty = stations.isEmpty() && viewModel.userLocation != null && viewModel.route.value == null
             emptyStateCard.visibility = if (showEmpty) View.VISIBLE else View.GONE
@@ -575,13 +586,27 @@ class MainActivity : AppCompatActivity() {
         viewModel.blockRadius.observe(this) { blocks ->
             tvBlockCount.text = blocks.toString()
             tvBlockDistance.text = "~${(blocks * MainViewModel.METERS_PER_BLOCK).toInt()}m"
+            updateRadiusCircle()
         }
 
         viewModel.bikeTypePreference.observe(this) { pref ->
+            val btnAll = findViewById<MaterialButton>(R.id.btnBikeAll)
             val btnMech = findViewById<MaterialButton>(R.id.btnMechanical)
             val btnElec = findViewById<MaterialButton>(R.id.btnElectric)
-            btnMech.alpha = if (pref == BikeTypePreference.MECHANICAL_ONLY) 1f else 0.5f
-            btnElec.alpha = if (pref == BikeTypePreference.ELECTRIC_ONLY) 1f else 0.5f
+
+            // Filled style for active, outlined for inactive
+            val activeColor = Color.parseColor("#1A1A2E")
+            val inactiveColor = Color.TRANSPARENT
+            val activeText = Color.WHITE
+            val inactiveText = Color.parseColor("#1A1A2E")
+
+            btnAll.setBackgroundColor(if (pref == BikeTypePreference.BOTH) activeColor else inactiveColor)
+            btnAll.setTextColor(if (pref == BikeTypePreference.BOTH) activeText else inactiveText)
+            btnMech.setBackgroundColor(if (pref == BikeTypePreference.MECHANICAL_ONLY) activeColor else inactiveColor)
+            btnMech.setTextColor(if (pref == BikeTypePreference.MECHANICAL_ONLY) activeText else inactiveText)
+            btnElec.setBackgroundColor(if (pref == BikeTypePreference.ELECTRIC_ONLY) activeColor else inactiveColor)
+            btnElec.setTextColor(if (pref == BikeTypePreference.ELECTRIC_ONLY) activeText else inactiveText)
+
             // Refresh markers with new coloring
             viewModel.visibleStations.value?.let { updateStationMarkers(it) }
         }
@@ -1067,6 +1092,36 @@ class MainActivity : AppCompatActivity() {
         val minMatch = Regex("(\\d+)\\s*min").find(duration)
         if (minMatch != null) total += minMatch.groupValues[1].toInt()
         return total
+    }
+
+    private fun updateStationStats(stations: List<BicilonaStation>) {
+        val tvStats = findViewById<TextView>(R.id.tvStationStats)
+        if (stations.isEmpty()) {
+            tvStats.text = "No stations in range"
+            return
+        }
+        val totalBikes = stations.sumOf { it.bikesAvailable }
+        val totalMech = stations.sumOf { it.mechanicalBikes }
+        val totalElec = stations.sumOf { it.electricBikes }
+        val totalDocks = stations.sumOf { it.docksAvailable }
+        tvStats.text = "${stations.size} stations nearby\n" +
+            "🚲 $totalBikes bikes (⚙️ $totalMech · ⚡ $totalElec) · 🅿️ $totalDocks docks"
+    }
+
+    private fun updateRadiusCircle() {
+        if (!::googleMap.isInitialized) return
+        val loc = viewModel.userLocation ?: return
+        val radius = viewModel.radiusMeters
+
+        radiusCircle?.remove()
+        radiusCircle = googleMap.addCircle(
+            com.google.android.gms.maps.model.CircleOptions()
+                .center(loc)
+                .radius(radius)
+                .strokeWidth(2f)
+                .strokeColor(Color.parseColor("#442196F3"))
+                .fillColor(Color.parseColor("#112196F3"))
+        )
     }
 
     private fun showFavoritesDropdown() {
