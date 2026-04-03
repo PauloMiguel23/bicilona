@@ -427,6 +427,8 @@ class MainActivity : AppCompatActivity() {
                 tvCurrentLocation.text = station.name
                 pulseOnStation(station)
             }
+            // Re-render markers to highlight nearest station
+            viewModel.visibleStations.value?.let { updateStationMarkers(it) }
         }
 
         viewModel.selectedPickup.observe(this) { station ->
@@ -502,6 +504,8 @@ class MainActivity : AppCompatActivity() {
 
         val currentIds = stations.map { it.stationId }.toSet()
         val selectedPickupId = viewModel.selectedPickup.value?.stationId
+        val nearestStationId = viewModel.nearestStation.value?.stationId
+        val highlightId = selectedPickupId ?: nearestStationId
 
         // Remove markers for stations no longer visible
         val toRemove = stationMarkers.keys - currentIds
@@ -512,7 +516,7 @@ class MainActivity : AppCompatActivity() {
         // Add or update markers
         stations.forEach { station ->
             val icon = when {
-                station.stationId == selectedPickupId -> dotBlue
+                station.stationId == highlightId -> dotBlue
                 !station.isOperational -> dotGray
                 viewModel.relevantBikeCount(station) == 0 -> dotRed
                 viewModel.relevantBikeCount(station) <= 3 -> dotOrange
