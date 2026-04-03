@@ -91,7 +91,7 @@ object LocationUtils {
         val uri = android.net.Uri.parse("google.navigation:q=$destLat,$destLon&mode=b")
         val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri).apply {
             setPackage("com.google.android.apps.maps")
-            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)

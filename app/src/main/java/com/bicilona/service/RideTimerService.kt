@@ -136,7 +136,9 @@ class RideTimerService : Service() {
         val uri = Uri.parse("google.navigation:q=${coords.first},${coords.second}&mode=b")
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
             setPackage("com.google.android.apps.maps")
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            // CLEAR_TASK wipes Google Maps' current navigation state so the new
+            // route starts immediately without a "stop current navigation?" prompt
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         try {
             startActivity(intent)
