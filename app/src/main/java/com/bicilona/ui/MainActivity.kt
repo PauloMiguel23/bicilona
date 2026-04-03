@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
     private var pickupMarker: Marker? = null
     private var dropoffMarker: Marker? = null
     private var destinationMarker: Marker? = null
+    private val nearbyDropoffMarkers = mutableListOf<Marker>()
     private val routePolylines = mutableListOf<Polyline>()
     private var pulseAnimator: PulseAnimator? = null
 
@@ -342,16 +343,25 @@ class MainActivity : AppCompatActivity() {
             setDestination(latLng)
         }
 
-        // Tap on station marker → toggle pickup or show info
+        // Tap on station marker → toggle pickup, select dropoff, or show info
         googleMap.setOnMarkerClickListener { marker ->
             val station = marker.tag as? BicilonaStation
-            if (station != null && viewModel.route.value == null) {
+            if (station != null && viewModel.route.value != null) {
+                // Route is active — check if it's a nearby dropoff alternative
+                val isNearbyDropoff = nearbyDropoffMarkers.any { it == marker }
+                if (isNearbyDropoff) {
+                    viewModel.selectDropoffStation(station)
+                    true
+                } else {
+                    // Show info window for pickup/dropoff markers
+                    false
+                }
+            } else if (station != null) {
                 // No active route — toggle as custom pickup
                 viewModel.togglePickupStation(station)
                 marker.showInfoWindow()
                 true
             } else {
-                // Let default info window show
                 false
             }
         }
@@ -468,6 +478,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.favorites.observe(this) { favs ->
             currentFavorites = favs
         }
+
+        viewModel.nearbyDropoffs.observe(this) { dropoffs ->
+            updateNearbyDropoffMarkers(dropoffs)
+        }
     }
 
     // ════════════════════════════════════════
@@ -512,6 +526,38 @@ class MainActivity : AppCompatActivity() {
                 if (marker != null) {
                     stationMarkers[station.stationId] = marker
                 }
+            }
+        }
+    }
+
+    private fun updateNearbyDropoffMarkers(dropoffs: List<BicilonaStation>) {
+        if (!::googleMap.isInitialized) return
+
+        // Clear previous nearby dropoff markers
+        nearbyDropoffMarkers.forEach { it.remove() }
+        nearbyDropoffMarkers.clear()
+
+        // Only show when a route is active
+        if (viewModel.route.value == null) return
+
+        val dropoffId = viewModel.route.value?.dropoffStation?.stationId
+
+        dropoffs.forEach { station ->
+            // Skip the currently selected dropoff (already shown as purple highlighted)
+            if (station.stationId == dropoffId) return@forEach
+
+            val icon = MarkerFactory.createDot(this, Color.parseColor("#9C27B0"), strokeColor = Color.WHITE)
+            val marker = googleMap.addMarker(
+                MarkerOptions()
+                    .position(LatLng(station.lat, station.lon))
+                    .icon(icon)
+                    .anchor(0.5f, 0.5f)
+                    .zIndex(2f)
+                    .title(station.name)
+            )
+            marker?.tag = station
+            if (marker != null) {
+                nearbyDropoffMarkers.add(marker)
             }
         }
     }
@@ -632,6 +678,8 @@ class MainActivity : AppCompatActivity() {
         dropoffMarker = null
         destinationMarker?.remove()
         destinationMarker = null
+        nearbyDropoffMarkers.forEach { it.remove() }
+        nearbyDropoffMarkers.clear()
         routePolylines.forEach { it.remove() }
         routePolylines.clear()
         pulseAnimator?.stop()
