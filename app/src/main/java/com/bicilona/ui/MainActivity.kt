@@ -1240,7 +1240,6 @@ class MainActivity : AppCompatActivity() {
                 when (intent?.action) {
                     RideTimerService.BROADCAST_TICK -> {
                         val secsLeft = intent.getIntExtra(RideTimerService.EXTRA_SECONDS_LEFT, 0)
-                        val totalSecs = intent.getIntExtra(RideTimerService.EXTRA_TOTAL_SECONDS, 0)
                         val mins = secsLeft / 60
                         val secs = secsLeft % 60
                         tvCountdown.text = String.format("%02d:%02d", mins, secs)
