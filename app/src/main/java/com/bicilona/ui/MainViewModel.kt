@@ -141,7 +141,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         prefs.edit().putInt("bike_type", BikeTypePreference.BOTH.ordinal).apply()
         setWarningAtMinutes(25)
         setRedirectEnabled(false)
-        setRedirectMinutes(1)
+        setRedirectMinutes(29)
         filterStations()
         recomputeNearbyDropoffs()
     }
@@ -295,7 +295,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _warningAtMinutes = MutableLiveData(prefs.getInt("warning_at_minutes", 25))
     val warningAtMinutes: LiveData<Int> = _warningAtMinutes
 
-    private val _redirectMinutes = MutableLiveData(prefs.getInt("redirect_minutes", 1))
+    private val _redirectMinutes = MutableLiveData(prefs.getInt("redirect_minutes", 29))
     val redirectMinutes: LiveData<Int> = _redirectMinutes
 
     private val _redirectEnabled = MutableLiveData(prefs.getBoolean("redirect_enabled", false))
@@ -308,7 +308,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setRedirectMinutes(minutes: Int) {
-        val clamped = minutes.coerceIn(1, 10)
+        val warningAt = _warningAtMinutes.value ?: 25
+        val clamped = minutes.coerceIn(warningAt + 1, 29)
         _redirectMinutes.value = clamped
         prefs.edit().putInt("redirect_minutes", clamped).apply()
     }

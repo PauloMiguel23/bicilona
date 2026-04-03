@@ -899,7 +899,7 @@
                 android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
             <TextView android:id="@+id/tvRedirectValue" android:layout_width="48dp"
                 android:layout_height="wrap_content" android:gravity="center"
-                android:text="1" android:textSize="16sp" android:textStyle="bold"
+                android:text="29" android:textSize="16sp" android:textStyle="bold"
                 android:textColor="@color/bicing_dark" />
             <com.google.android.material.button.MaterialButton android:id="@+id/btnRedirectPlus"
                 style="@style/Widget.Material3.Button.OutlinedButton"

@@ -316,10 +316,10 @@ class MainActivity : AppCompatActivity() {
             viewModel.setWarningAtMinutes((viewModel.warningAtMinutes.value ?: 25) + 1)
         }
         findViewById<MaterialButton>(R.id.btnRedirectMinus).setOnClickListener {
-            viewModel.setRedirectMinutes((viewModel.redirectMinutes.value ?: 1) - 1)
+            viewModel.setRedirectMinutes((viewModel.redirectMinutes.value ?: 29) - 1)
         }
         findViewById<MaterialButton>(R.id.btnRedirectPlus).setOnClickListener {
-            viewModel.setRedirectMinutes((viewModel.redirectMinutes.value ?: 1) + 1)
+            viewModel.setRedirectMinutes((viewModel.redirectMinutes.value ?: 29) + 1)
         }
     }
 
@@ -1216,7 +1216,8 @@ class MainActivity : AppCompatActivity() {
         val warningAtMinutes = viewModel.warningAtMinutes.value ?: 25
         val warningRemaining = limitMinutes - warningAtMinutes  // e.g. 30 - 25 = 5 min remaining
         val redirectEnabled = viewModel.redirectEnabled.value == true
-        val redirectMinutes = if (redirectEnabled) (viewModel.redirectMinutes.value ?: 1) else -1
+        val redirectAtMin = viewModel.redirectMinutes.value ?: 29
+        val redirectRemaining = if (redirectEnabled) (limitMinutes - redirectAtMin) else -1
 
         hasWarned = false
         hasRedirected = false
@@ -1253,7 +1254,7 @@ class MainActivity : AppCompatActivity() {
             tvPeekCountdown.text = timeStr
 
             val warningThreshold = warningRemaining * 60
-            val redirectThreshold = if (redirectEnabled) redirectMinutes * 60 else -1
+            val redirectThreshold = if (redirectEnabled) redirectRemaining * 60 else -1
 
             val color = when {
                 redirectThreshold > 0 && secsLeft <= redirectThreshold -> {
@@ -1301,7 +1302,7 @@ class MainActivity : AppCompatActivity() {
             action = RideTimerService.ACTION_START
             putExtra(RideTimerService.EXTRA_TIME_LIMIT_MINUTES, limitMinutes)
             putExtra(RideTimerService.EXTRA_WARNING_MINUTES, warningRemaining)
-            putExtra(RideTimerService.EXTRA_REDIRECT_MINUTES, redirectMinutes)
+            putExtra(RideTimerService.EXTRA_REDIRECT_MINUTES, redirectRemaining)
         }
         startForegroundService(serviceIntent)
 
