@@ -139,6 +139,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         prefs.edit().putInt("block_radius", DEFAULT_BLOCKS).apply()
         _bikeTypePreference.value = BikeTypePreference.BOTH
         prefs.edit().putInt("bike_type", BikeTypePreference.BOTH.ordinal).apply()
+        setTimeLimit(30)
+        setWarningMinutes(5)
+        setRedirectEnabled(false)
+        setRedirectMinutes(1)
         filterStations()
         recomputeNearbyDropoffs()
     }
@@ -294,6 +298,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _redirectMinutes = MutableLiveData(prefs.getInt("redirect_minutes", 1))
     val redirectMinutes: LiveData<Int> = _redirectMinutes
 
+    private val _redirectEnabled = MutableLiveData(prefs.getBoolean("redirect_enabled", false))
+    val redirectEnabled: LiveData<Boolean> = _redirectEnabled
+
     fun setTimeLimit(minutes: Int) {
         val clamped = minutes.coerceIn(5, 60)
         _timeLimitMinutes.value = clamped
@@ -310,6 +317,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val clamped = minutes.coerceIn(1, 10)
         _redirectMinutes.value = clamped
         prefs.edit().putInt("redirect_minutes", clamped).apply()
+    }
+
+    fun setRedirectEnabled(enabled: Boolean) {
+        _redirectEnabled.value = enabled
+        prefs.edit().putBoolean("redirect_enabled", enabled).apply()
     }
 
     /**

@@ -109,7 +109,8 @@ class RideTimerService : Service() {
 
                 // Auto-redirect: launch navigation from the foreground service
                 // (allowed to start activities from background)
-                if (!hasRedirected && secsLeft <= redirectSeconds) {
+                // redirectSeconds < 0 means redirect is disabled
+                if (!hasRedirected && redirectSeconds > 0 && secsLeft <= redirectSeconds) {
                     hasRedirected = true
                     vibrateRedirect()
                     launchRedirectNavigation()

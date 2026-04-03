@@ -297,6 +297,20 @@ class MainActivity : AppCompatActivity() {
         viewModel.warningMinutes.observe(this) { tvWarning.text = it.toString() }
         viewModel.redirectMinutes.observe(this) { tvRedirect.text = it.toString() }
 
+        // Redirect toggle
+        val switchRedirect = findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.switchRedirect)
+        val redirectContainer = findViewById<View>(R.id.redirectMinutesContainer)
+        switchRedirect.isChecked = viewModel.redirectEnabled.value == true
+        redirectContainer.visibility = if (switchRedirect.isChecked) View.VISIBLE else View.GONE
+
+        viewModel.redirectEnabled.observe(this) { enabled ->
+            switchRedirect.isChecked = enabled
+            redirectContainer.visibility = if (enabled) View.VISIBLE else View.GONE
+        }
+        switchRedirect.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setRedirectEnabled(isChecked)
+        }
+
         findViewById<MaterialButton>(R.id.btnTimeLimitMinus).setOnClickListener {
             viewModel.setTimeLimit((viewModel.timeLimitMinutes.value ?: 30) - 5)
         }
@@ -1208,7 +1222,8 @@ class MainActivity : AppCompatActivity() {
     private fun startRideTimer() {
         val limitMinutes = viewModel.timeLimitMinutes.value ?: 30
         val warningMinutes = viewModel.warningMinutes.value ?: 5
-        val redirectMinutes = viewModel.redirectMinutes.value ?: 1
+        val redirectEnabled = viewModel.redirectEnabled.value == true
+        val redirectMinutes = if (redirectEnabled) (viewModel.redirectMinutes.value ?: 1) else -1
 
         hasWarned = false
         hasRedirected = false
@@ -1245,10 +1260,11 @@ class MainActivity : AppCompatActivity() {
             tvPeekCountdown.text = timeStr
 
             val warningThreshold = (viewModel.warningMinutes.value ?: 5) * 60
-            val redirectThreshold = (viewModel.redirectMinutes.value ?: 1) * 60
+            val redirectThreshold = if (viewModel.redirectEnabled.value == true)
+                (viewModel.redirectMinutes.value ?: 1) * 60 else -1
 
             val color = when {
-                secsLeft <= redirectThreshold -> {
+                redirectThreshold > 0 && secsLeft <= redirectThreshold -> {
                     tvLabel.text = "⚠️ Return bike NOW!"
                     Color.parseColor("#E30613")
                 }
