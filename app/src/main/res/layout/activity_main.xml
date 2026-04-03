@@ -838,38 +838,14 @@
             android:textColor="@color/bicing_dark" android:paddingBottom="8dp" />
 
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Bicing free ride limit and auto-redirect threshold"
+            android:text="Bicing free ride is 30 min. Get a warning vibration so you know when to head to a station."
             android:textSize="12sp" android:textColor="#757575" android:paddingBottom="12dp" />
 
-        <!-- Time limit -->
+        <!-- Warning at X minutes -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="10dp">
             <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="Free ride limit"
-                android:textSize="13sp" android:textColor="@color/bicing_dark" />
-            <com.google.android.material.button.MaterialButton android:id="@+id/btnTimeLimitMinus"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="36dp" android:layout_height="36dp" android:text="−"
-                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
-                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
-            <TextView android:id="@+id/tvTimeLimitValue" android:layout_width="48dp"
-                android:layout_height="wrap_content" android:gravity="center"
-                android:text="30" android:textSize="16sp" android:textStyle="bold"
-                android:textColor="@color/bicing_dark" />
-            <com.google.android.material.button.MaterialButton android:id="@+id/btnTimeLimitPlus"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="36dp" android:layout_height="36dp" android:text="+"
-                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
-                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text=" min" android:textSize="13sp" android:textColor="#757575" />
-        </LinearLayout>
-
-        <!-- Warning threshold -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="10dp">
-            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="Warning alert"
+                android:layout_weight="1" android:text="Warn me at"
                 android:textSize="13sp" android:textColor="@color/bicing_dark" />
             <com.google.android.material.button.MaterialButton android:id="@+id/btnWarningMinus"
                 style="@style/Widget.Material3.Button.OutlinedButton"
@@ -878,7 +854,7 @@
                 android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
             <TextView android:id="@+id/tvWarningValue" android:layout_width="48dp"
                 android:layout_height="wrap_content" android:gravity="center"
-                android:text="5" android:textSize="16sp" android:textStyle="bold"
+                android:text="25" android:textSize="16sp" android:textStyle="bold"
                 android:textColor="@color/bicing_dark" />
             <com.google.android.material.button.MaterialButton android:id="@+id/btnWarningPlus"
                 style="@style/Widget.Material3.Button.OutlinedButton"

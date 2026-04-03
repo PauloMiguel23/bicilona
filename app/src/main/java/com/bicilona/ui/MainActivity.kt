@@ -289,12 +289,10 @@ class MainActivity : AppCompatActivity() {
         } catch (_: Exception) { }
 
         // Timer settings
-        val tvTimeLimit = findViewById<TextView>(R.id.tvTimeLimitValue)
         val tvWarning = findViewById<TextView>(R.id.tvWarningValue)
         val tvRedirect = findViewById<TextView>(R.id.tvRedirectValue)
 
-        viewModel.timeLimitMinutes.observe(this) { tvTimeLimit.text = it.toString() }
-        viewModel.warningMinutes.observe(this) { tvWarning.text = it.toString() }
+        viewModel.warningAtMinutes.observe(this) { tvWarning.text = it.toString() }
         viewModel.redirectMinutes.observe(this) { tvRedirect.text = it.toString() }
 
         // Redirect toggle
@@ -311,17 +309,11 @@ class MainActivity : AppCompatActivity() {
             viewModel.setRedirectEnabled(isChecked)
         }
 
-        findViewById<MaterialButton>(R.id.btnTimeLimitMinus).setOnClickListener {
-            viewModel.setTimeLimit((viewModel.timeLimitMinutes.value ?: 30) - 5)
-        }
-        findViewById<MaterialButton>(R.id.btnTimeLimitPlus).setOnClickListener {
-            viewModel.setTimeLimit((viewModel.timeLimitMinutes.value ?: 30) + 5)
-        }
         findViewById<MaterialButton>(R.id.btnWarningMinus).setOnClickListener {
-            viewModel.setWarningMinutes((viewModel.warningMinutes.value ?: 5) - 1)
+            viewModel.setWarningAtMinutes((viewModel.warningAtMinutes.value ?: 25) - 1)
         }
         findViewById<MaterialButton>(R.id.btnWarningPlus).setOnClickListener {
-            viewModel.setWarningMinutes((viewModel.warningMinutes.value ?: 5) + 1)
+            viewModel.setWarningAtMinutes((viewModel.warningAtMinutes.value ?: 25) + 1)
         }
         findViewById<MaterialButton>(R.id.btnRedirectMinus).setOnClickListener {
             viewModel.setRedirectMinutes((viewModel.redirectMinutes.value ?: 1) - 1)
@@ -1220,8 +1212,9 @@ class MainActivity : AppCompatActivity() {
     // ════════════════════════════════════════
 
     private fun startRideTimer() {
-        val limitMinutes = viewModel.timeLimitMinutes.value ?: 30
-        val warningMinutes = viewModel.warningMinutes.value ?: 5
+        val limitMinutes = viewModel.timeLimitMinutes
+        val warningAtMinutes = viewModel.warningAtMinutes.value ?: 25
+        val warningRemaining = limitMinutes - warningAtMinutes  // e.g. 30 - 25 = 5 min remaining
         val redirectEnabled = viewModel.redirectEnabled.value == true
         val redirectMinutes = if (redirectEnabled) (viewModel.redirectMinutes.value ?: 1) else -1
 
@@ -1259,9 +1252,8 @@ class MainActivity : AppCompatActivity() {
             tvCountdown.text = timeStr
             tvPeekCountdown.text = timeStr
 
-            val warningThreshold = (viewModel.warningMinutes.value ?: 5) * 60
-            val redirectThreshold = if (viewModel.redirectEnabled.value == true)
-                (viewModel.redirectMinutes.value ?: 1) * 60 else -1
+            val warningThreshold = warningRemaining * 60
+            val redirectThreshold = if (redirectEnabled) redirectMinutes * 60 else -1
 
             val color = when {
                 redirectThreshold > 0 && secsLeft <= redirectThreshold -> {
@@ -1269,7 +1261,7 @@ class MainActivity : AppCompatActivity() {
                     Color.parseColor("#E30613")
                 }
                 secsLeft <= warningThreshold -> {
-                    tvLabel.text = "⏰ Return bike soon"
+                    tvLabel.text = "⏰ ${mins} min left — find a station!"
                     Color.parseColor("#FF9800")
                 }
                 else -> null
@@ -1281,12 +1273,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         RideTimerService.onWarning = {
-            Toast.makeText(this, "⏰ Warning — find a station!", Toast.LENGTH_LONG).show()
+            val remaining = limitMinutes - warningAtMinutes
+            Toast.makeText(this, "⏰ $remaining min left — find a station!", Toast.LENGTH_LONG).show()
         }
 
         RideTimerService.onRedirect = {
             // Navigation is launched by the service (from foreground context).
-            // This callback just updates the activity UI if visible.
         }
 
         RideTimerService.findRedirectStation = {
@@ -1308,7 +1300,7 @@ class MainActivity : AppCompatActivity() {
         val serviceIntent = Intent(this, RideTimerService::class.java).apply {
             action = RideTimerService.ACTION_START
             putExtra(RideTimerService.EXTRA_TIME_LIMIT_MINUTES, limitMinutes)
-            putExtra(RideTimerService.EXTRA_WARNING_MINUTES, warningMinutes)
+            putExtra(RideTimerService.EXTRA_WARNING_MINUTES, warningRemaining)
             putExtra(RideTimerService.EXTRA_REDIRECT_MINUTES, redirectMinutes)
         }
         startForegroundService(serviceIntent)

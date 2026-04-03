@@ -139,8 +139,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         prefs.edit().putInt("block_radius", DEFAULT_BLOCKS).apply()
         _bikeTypePreference.value = BikeTypePreference.BOTH
         prefs.edit().putInt("bike_type", BikeTypePreference.BOTH.ordinal).apply()
-        setTimeLimit(30)
-        setWarningMinutes(5)
+        setWarningAtMinutes(25)
         setRedirectEnabled(false)
         setRedirectMinutes(1)
         filterStations()
@@ -289,11 +288,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // ──── Timer settings ────
 
-    private val _timeLimitMinutes = MutableLiveData(prefs.getInt("time_limit", 30))
-    val timeLimitMinutes: LiveData<Int> = _timeLimitMinutes
+    /** Fixed Bicing free ride limit */
+    val timeLimitMinutes: Int = 30
 
-    private val _warningMinutes = MutableLiveData(prefs.getInt("warning_minutes", 5))
-    val warningMinutes: LiveData<Int> = _warningMinutes
+    /** Warn at X minutes into the ride (default 25 = 5 min before limit) */
+    private val _warningAtMinutes = MutableLiveData(prefs.getInt("warning_at_minutes", 25))
+    val warningAtMinutes: LiveData<Int> = _warningAtMinutes
 
     private val _redirectMinutes = MutableLiveData(prefs.getInt("redirect_minutes", 1))
     val redirectMinutes: LiveData<Int> = _redirectMinutes
@@ -301,16 +301,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _redirectEnabled = MutableLiveData(prefs.getBoolean("redirect_enabled", false))
     val redirectEnabled: LiveData<Boolean> = _redirectEnabled
 
-    fun setTimeLimit(minutes: Int) {
-        val clamped = minutes.coerceIn(5, 60)
-        _timeLimitMinutes.value = clamped
-        prefs.edit().putInt("time_limit", clamped).apply()
-    }
-
-    fun setWarningMinutes(minutes: Int) {
-        val clamped = minutes.coerceIn(1, 15)
-        _warningMinutes.value = clamped
-        prefs.edit().putInt("warning_minutes", clamped).apply()
+    fun setWarningAtMinutes(minutes: Int) {
+        val clamped = minutes.coerceIn(5, 29)
+        _warningAtMinutes.value = clamped
+        prefs.edit().putInt("warning_at_minutes", clamped).apply()
     }
 
     fun setRedirectMinutes(minutes: Int) {
