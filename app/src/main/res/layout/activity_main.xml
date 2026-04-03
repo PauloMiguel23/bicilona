@@ -780,28 +780,30 @@
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="8dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnBlockMinus" style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="48dp" android:layout_height="48dp" android:text="−"
-                android:textSize="20sp" android:padding="0dp" android:minWidth="0dp"
-                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
-
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                <TextView android:id="@+id/tvBlockCount" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:text="3" android:textSize="28sp"
-                    android:textStyle="bold" android:textColor="@color/bicing_dark" />
+                android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Blocks" android:textSize="13sp" android:textColor="@color/bicing_dark" />
                 <TextView android:id="@+id/tvBlockDistance" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:text="~360m" android:textSize="13sp"
+                    android:layout_height="wrap_content" android:text="~360m" android:textSize="11sp"
                     android:textColor="#757575" />
             </LinearLayout>
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBlockMinus" style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="−"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
+                android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:id="@+id/tvBlockCount" android:layout_width="48dp"
+                android:layout_height="wrap_content" android:gravity="center"
+                android:text="3" android:textSize="16sp"
+                android:textStyle="bold" android:textColor="@color/bicing_dark" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBlockPlus" style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="48dp" android:layout_height="48dp" android:text="+"
-                android:textSize="20sp" android:padding="0dp" android:minWidth="0dp"
+                android:layout_width="36dp" android:layout_height="36dp" android:text="+"
+                android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
                 android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text=" blk" android:textSize="13sp" android:textColor="#757575" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
