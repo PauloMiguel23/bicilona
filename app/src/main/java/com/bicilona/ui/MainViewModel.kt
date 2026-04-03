@@ -120,6 +120,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _blockRadius.value = current + 1
             prefs.edit().putInt("block_radius", current + 1).apply()
             filterStations()
+            recomputeNearbyDropoffs()
         }
     }
 
@@ -129,6 +130,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _blockRadius.value = current - 1
             prefs.edit().putInt("block_radius", current - 1).apply()
             filterStations()
+            recomputeNearbyDropoffs()
         }
     }
 
@@ -138,6 +140,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _bikeTypePreference.value = BikeTypePreference.BOTH
         prefs.edit().putInt("bike_type", BikeTypePreference.BOTH.ordinal).apply()
         filterStations()
+        recomputeNearbyDropoffs()
+    }
+
+    /**
+     * Re-apply radius to nearby dropoffs when block radius changes mid-route
+     */
+    private fun recomputeNearbyDropoffs() {
+        val dest = currentDestination ?: return
+        val route = _route.value ?: return
+        computeNearbyDropoffs(dest, route.dropoffStation.stationId)
     }
 
     fun loadStations() {
