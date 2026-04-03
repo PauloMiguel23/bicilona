@@ -629,11 +629,11 @@
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_weight="2"
-                        android:text="🚲  Start ride"
+                        android:text="Start ride  ↗"
                         android:textSize="14sp"
                         android:textAllCaps="false"
                         app:cornerRadius="12dp"
-                        app:backgroundTint="@color/bicing_green" />
+                        app:backgroundTint="#4285F4" />
                 </LinearLayout>
 
                 <!-- Ride timer (hidden until ride starts) -->
