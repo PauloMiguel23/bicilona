@@ -96,6 +96,7 @@ class MainActivity : AppCompatActivity() {
     private var currentPredictions: List<AutocompletePrediction> = emptyList()
     private val searchHandler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+    private var suppressDropdown = false
 
     // Live location
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
@@ -281,10 +282,14 @@ class MainActivity : AppCompatActivity() {
         etDestination.threshold = 0
 
         etDestination.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) showFavoritesDropdown()
+            if (hasFocus) {
+                suppressDropdown = false
+                showFavoritesDropdown()
+            }
         }
 
         etDestination.setOnClickListener {
+            suppressDropdown = false
             showFavoritesDropdown()
         }
 
@@ -293,6 +298,7 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
+                if (suppressDropdown) return
                 val query = s?.toString()?.trim() ?: ""
                 searchRunnable?.let { searchHandler.removeCallbacks(it) }
                 if (query.length >= 2) {
@@ -965,6 +971,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setDestination(latLng: LatLng) {
+        suppressDropdown = true
         etDestination.dismissDropDown()
         etDestination.clearFocus()
         hideKeyboard()
