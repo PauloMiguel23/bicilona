@@ -3,6 +3,7 @@ package com.bicilona.service
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.*
 import androidx.core.app.NotificationCompat
 import com.bicilona.R
@@ -27,12 +28,15 @@ class RideTimerService : Service() {
         // Direct callbacks — service and activity share the same process
         var onTick: ((secsLeft: Int) -> Unit)? = null
         var onWarning: (() -> Unit)? = null
+        /** Return the LatLng (lat, lon) of the nearest station with docks, or null */
+        var findRedirectStation: (() -> Pair<Double, Double>?)? = null
         var onRedirect: (() -> Unit)? = null
         var onFinished: (() -> Unit)? = null
 
         fun clearCallbacks() {
             onTick = null
             onWarning = null
+            findRedirectStation = null
             onRedirect = null
             onFinished = null
         }
@@ -103,10 +107,12 @@ class RideTimerService : Service() {
                     onWarning?.invoke()
                 }
 
-                // Redirect vibration
+                // Auto-redirect: launch navigation from the foreground service
+                // (allowed to start activities from background)
                 if (!hasRedirected && secsLeft <= redirectSeconds) {
                     hasRedirected = true
                     vibrateRedirect()
+                    launchRedirectNavigation()
                     onRedirect?.invoke()
                 }
             }
@@ -118,6 +124,34 @@ class RideTimerService : Service() {
                 isRunning = false
             }
         }.start()
+    }
+
+    /**
+     * Find the nearest station with docks and launch Google Maps navigation to it.
+     * Called from the foreground service context, which is allowed to start
+     * activities even when the app is in the background (Android 10+).
+     */
+    private fun launchRedirectNavigation() {
+        val coords = findRedirectStation?.invoke() ?: return
+        val uri = Uri.parse("google.navigation:q=${coords.first},${coords.second}&mode=b")
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            setPackage("com.google.android.apps.maps")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            startActivity(intent)
+        } catch (_: Exception) {
+            // Fallback: open directions URL
+            val fallbackUri = Uri.parse(
+                "https://www.google.com/maps/dir/?api=1" +
+                "&destination=${coords.first},${coords.second}" +
+                "&travelmode=bicycling"
+            )
+            val fallbackIntent = Intent(Intent.ACTION_VIEW, fallbackUri).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            try { startActivity(fallbackIntent) } catch (_: Exception) {}
+        }
     }
 
     private fun stopTimer() {

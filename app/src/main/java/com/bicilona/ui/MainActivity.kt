@@ -1268,7 +1268,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         RideTimerService.onRedirect = {
-            autoRedirectToNearestStation()
+            // Navigation is launched by the service (from foreground context).
+            // This callback just updates the activity UI if visible.
+        }
+
+        RideTimerService.findRedirectStation = {
+            viewModel.findNearestDropoffToUser()?.let { station ->
+                Pair(station.lat, station.lon)
+            }
         }
 
         RideTimerService.onFinished = {
@@ -1308,26 +1315,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.rideTimerContainer).visibility = View.GONE
         findViewById<View>(R.id.peekTimerContainer).visibility = View.GONE
         findViewById<View>(R.id.btnStartRide).visibility = View.VISIBLE
-    }
-
-    private fun autoRedirectToNearestStation() {
-        val station = viewModel.findNearestDropoffToUser() ?: run {
-            Toast.makeText(this, "No stations with free docks nearby!", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        Toast.makeText(
-            this,
-            "🚲 Redirecting to ${station.name} (${station.docksAvailable} docks free)",
-            Toast.LENGTH_LONG
-        ).show()
-
-        // Launch turn-by-turn navigation directly — replaces current session
-        LocationUtils.launchGoogleMapsNavigation(
-            this,
-            station.lat,
-            station.lon
-        )
     }
 
     private fun showFavoritesDropdown() {
