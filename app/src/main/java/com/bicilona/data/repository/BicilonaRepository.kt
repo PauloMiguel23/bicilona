@@ -41,7 +41,8 @@ class BicilonaRepository {
                 isOperational = st.status == "IN_SERVICE" && st.isInstalled && st.isRenting && st.isReturning,
                 vehicleTypes = st.vehicleTypesAvailable
                     ?.associate { it.vehicleTypeId to it.count }
-                    ?: emptyMap()
+                    ?: emptyMap(),
+                lastReported = st.lastReported
             )
         }
     }

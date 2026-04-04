@@ -77,4 +77,16 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Stale data warning -->
+    <TextView
+        android:id="@+id/tvStaleWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:textSize="11sp"
+        android:textColor="#E65100"
+        android:visibility="gone"
+        android:text="⚠️ Data may be outdated" />
+
 </LinearLayout>

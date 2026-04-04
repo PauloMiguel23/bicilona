@@ -466,6 +466,15 @@ class MainActivity : AppCompatActivity() {
                     capacityLabel.visibility = View.GONE
                 }
 
+                // Stale data warning
+                val tvStale = view.findViewById<TextView>(R.id.tvStaleWarning)
+                val nowEpoch = System.currentTimeMillis() / 1000
+                if (station.isStale(nowEpoch)) {
+                    tvStale.visibility = View.VISIBLE
+                    val minsAgo = station.lastReported?.let { (nowEpoch - it) / 60 } ?: 0
+                    tvStale.text = "⚠️ Last updated ${minsAgo} min ago"
+                }
+
                 return view
             }
         })

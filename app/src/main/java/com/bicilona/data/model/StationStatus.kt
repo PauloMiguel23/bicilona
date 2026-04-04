@@ -24,6 +24,7 @@ data class StationStatus(
     @SerializedName("is_installed") val isInstalled: Boolean,
     @SerializedName("is_renting") val isRenting: Boolean,
     @SerializedName("is_returning") val isReturning: Boolean,
+    @SerializedName("last_reported") val lastReported: Long?,
     @SerializedName("vehicle_types_available") val vehicleTypesAvailable: List<VehicleType>?
 )
 

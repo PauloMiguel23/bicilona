@@ -15,12 +15,19 @@ data class BicilonaStation(
     val bikesAvailable: Int,
     val docksAvailable: Int,
     val isOperational: Boolean,
-    val vehicleTypes: Map<String, Int> // e.g. "ICONIC" -> 5, "BOOST" -> 2
+    val vehicleTypes: Map<String, Int>, // e.g. "ICONIC" -> 5, "BOOST" -> 2
+    val lastReported: Long? = null      // epoch seconds
 ) {
     val mechanicalBikes: Int get() = vehicleTypes.getOrDefault("ICONIC", 0)
     val electricBikes: Int get() = (vehicleTypes.getOrDefault("BOOST", 0)
             + vehicleTypes.getOrDefault("EFIT", 0)
             + vehicleTypes.getOrDefault("FIT", 0))
+
+    /** True when station data hasn't been updated in over 5 minutes */
+    fun isStale(nowEpochSeconds: Long): Boolean {
+        val reported = lastReported ?: return false
+        return (nowEpochSeconds - reported) > 300
+    }
 }
 
 /**
