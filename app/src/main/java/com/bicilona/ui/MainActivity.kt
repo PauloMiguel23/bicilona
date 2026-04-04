@@ -282,6 +282,15 @@ class MainActivity : AppCompatActivity() {
             viewModel.resetToDefaults()
         }
 
+        // Support button (hidden — set visibility to VISIBLE to enable)
+        findViewById<MaterialButton>(R.id.btnSupportCoffee).setOnClickListener {
+            // TODO: replace with your actual Buy Me a Coffee / Ko-fi URL
+            val url = "https://buymeacoffee.com/bicilona"
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+            } catch (_: Exception) {}
+        }
+
         // Setting help buttons
         findViewById<View>(R.id.btnHelpRadius).setOnClickListener {
             showSettingHelp("Search Radius", R.string.help_radius)

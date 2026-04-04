@@ -956,6 +956,23 @@
             </LinearLayout>
         </ScrollView>
 
+        <!-- Support / Tip jar (hidden until ready) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSupportCoffee"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="4dp"
+            android:text="☕ Buy me a coffee"
+            android:textSize="13sp"
+            android:textAllCaps="false"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:visibility="gone"
+            app:cornerRadius="10dp" />
+
         <!-- Version (pinned to bottom) -->
         <TextView
             android:id="@+id/tvVersion"
