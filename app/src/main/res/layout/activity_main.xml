@@ -803,7 +803,7 @@
                 android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
                 android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/blk_unit" android:textSize="13sp" android:textColor="#757575" />
+                android:text="@string/blk_unit" android:layout_marginStart="6dp" android:textSize="13sp" android:textColor="#757575" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
@@ -882,7 +882,7 @@
                 android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
                 android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/min_unit" android:textSize="13sp" android:textColor="#757575" />
+                android:text="@string/min_unit" android:layout_marginStart="6dp" android:textSize="13sp" android:textColor="#757575" />
         </LinearLayout>
 
         <!-- Auto-redirect toggle -->
@@ -922,7 +922,7 @@
                 android:textSize="16sp" android:padding="0dp" android:minWidth="0dp"
                 android:minHeight="0dp" android:insetTop="0dp" android:insetBottom="0dp" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/min_unit" android:textSize="13sp" android:textColor="#757575" />
+                android:text="@string/min_unit" android:layout_marginStart="6dp" android:textSize="13sp" android:textColor="#757575" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
