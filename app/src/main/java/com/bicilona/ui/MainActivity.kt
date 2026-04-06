@@ -1132,22 +1132,36 @@ class MainActivity : AppCompatActivity() {
     // ════════════════════════════════════════
 
     private fun showFavoriteOptionsDialog(favorite: FavoritePlace) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("⭐ ${favorite.name}")
-            .setItems(arrayOf("🗺️ ${getString(R.string.set_as_destination)}", "🗑️ ${getString(R.string.remove_from_favorites)}")) { _, which ->
-                when (which) {
-                    0 -> {
-                        val latLng = LatLng(favorite.lat, favorite.lon)
-                        etDestination.setText(favorite.name)
-                        setDestination(latLng)
-                    }
-                    1 -> {
-                        viewModel.deleteFavorite(favorite)
-                        Toast.makeText(this, getString(R.string.removed_favorite_toast, favorite.name), Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            .show()
+        val view = layoutInflater.inflate(R.layout.dialog_favorite_options, null)
+        view.findViewById<TextView>(R.id.tvFavTitle).text = "⭐ ${favorite.name}"
+        view.findViewById<TextView>(R.id.btnSetDestination).text =
+            "🗺️ ${getString(R.string.set_as_destination)}"
+        view.findViewById<TextView>(R.id.btnRemoveFavorite).text =
+            "🗑️ ${getString(R.string.remove_from_favorites)}"
+
+        val dialog = android.app.Dialog(this).apply {
+            requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+            setContentView(view)
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
+            window?.setLayout(
+                android.view.WindowManager.LayoutParams.WRAP_CONTENT,
+                android.view.WindowManager.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        view.findViewById<View>(R.id.btnSetDestination).setOnClickListener {
+            val latLng = LatLng(favorite.lat, favorite.lon)
+            etDestination.setText(favorite.name)
+            setDestination(latLng)
+            dialog.dismiss()
+        }
+        view.findViewById<View>(R.id.btnRemoveFavorite).setOnClickListener {
+            viewModel.deleteFavorite(favorite)
+            Toast.makeText(this, getString(R.string.removed_favorite_toast, favorite.name), Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showSaveFavoriteDialog(destination: LatLng) {

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_info_window"
+    android:padding="10dp"
+    android:minWidth="180dp">
+
+    <!-- Favorite name -->
+    <TextView
+        android:id="@+id/tvFavTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:drawablePadding="4dp" />
+
+    <!-- Set as destination -->
+    <TextView
+        android:id="@+id/btnSetDestination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="6dp"
+        android:text="🗺️ Set as destination"
+        android:textSize="13sp"
+        android:textColor="#1A1A2E"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0" />
+
+    <!-- Remove from favorites -->
+    <TextView
+        android:id="@+id/btnRemoveFavorite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="6dp"
+        android:text="🗑️ Remove from favorites"
+        android:textSize="13sp"
+        android:textColor="#E30613"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true" />
+
+</LinearLayout>
