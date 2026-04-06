@@ -5,15 +5,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_info_window"
-    android:padding="10dp"
-    android:minWidth="140dp">
+    android:padding="12dp"
+    android:minWidth="160dp">
 
     <!-- Favorite name -->
     <TextView
         android:id="@+id/tvFavTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="13sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         android:textColor="#1A1A2E"
         android:maxLines="2"
@@ -24,22 +24,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:gravity="center">
 
-        <!-- Set as destination -->
+        <!-- Set as destination (navigation arrow) -->
         <TextView
             android:id="@+id/btnSetDestination"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🗺️"
-            android:textSize="22sp"
+            android:text="📍"
+            android:textSize="24sp"
             android:gravity="center"
-            android:paddingVertical="4dp"
+            android:paddingVertical="6dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="28dp"
+            android:background="#D0D0D0" />
 
         <!-- Remove from favorites -->
         <TextView
@@ -48,9 +54,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="🗑️"
-            android:textSize="22sp"
+            android:textSize="24sp"
             android:gravity="center"
-            android:paddingVertical="4dp"
+            android:paddingVertical="6dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true" />
