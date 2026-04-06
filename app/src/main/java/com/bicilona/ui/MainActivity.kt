@@ -1134,10 +1134,6 @@ class MainActivity : AppCompatActivity() {
     private fun showFavoriteOptionsDialog(favorite: FavoritePlace) {
         val view = layoutInflater.inflate(R.layout.dialog_favorite_options, null)
         view.findViewById<TextView>(R.id.tvFavTitle).text = "⭐ ${favorite.name}"
-        view.findViewById<TextView>(R.id.btnSetDestination).text =
-            "🗺️ ${getString(R.string.set_as_destination)}"
-        view.findViewById<TextView>(R.id.btnRemoveFavorite).text =
-            "🗑️ ${getString(R.string.remove_from_favorites)}"
 
         val dialog = android.app.Dialog(this).apply {
             requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
