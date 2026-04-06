@@ -147,6 +147,8 @@ class MainActivity : AppCompatActivity() {
             setupMap()
             enableMyLocation()
             loadClosestStations()
+            // Ensure favorites are drawn after map is ready (survives recreate)
+            updateFavoriteMarkers()
         }
     }
 

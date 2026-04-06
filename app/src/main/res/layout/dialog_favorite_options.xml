@@ -46,11 +46,12 @@
                 android:textSize="24sp" />
             <TextView
                 android:id="@+id/tvSetDestLabel"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/set_as_destination"
                 android:textSize="10sp"
                 android:textColor="#757575"
+                android:gravity="center"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
@@ -80,11 +81,12 @@
                 android:textSize="24sp" />
             <TextView
                 android:id="@+id/tvRemoveLabel"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/remove"
                 android:textSize="10sp"
                 android:textColor="#757575"
+                android:gravity="center"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
     </LinearLayout>
