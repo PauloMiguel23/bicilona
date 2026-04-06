@@ -949,17 +949,17 @@
             <com.google.android.material.button.MaterialButton android:id="@+id/btnLangEn"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
-                android:layout_marginEnd="4dp" android:text="EN" android:textSize="13sp"
+                android:layout_marginEnd="4dp" android:text="🇬🇧 EN" android:textSize="13sp"
                 android:textAllCaps="false" android:padding="0dp" android:minWidth="0dp" app:cornerRadius="10dp" />
             <com.google.android.material.button.MaterialButton android:id="@+id/btnLangEs"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
-                android:layout_marginHorizontal="4dp" android:text="ES" android:textSize="13sp"
+                android:layout_marginHorizontal="4dp" android:text="🇪🇸 ES" android:textSize="13sp"
                 android:textAllCaps="false" android:padding="0dp" android:minWidth="0dp" app:cornerRadius="10dp" />
             <com.google.android.material.button.MaterialButton android:id="@+id/btnLangCa"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
-                android:layout_marginStart="4dp" android:text="CA" android:textSize="13sp"
+                android:layout_marginStart="4dp" android:text="🏴󠁥󠁳󠁣󠁴󠁿 CA" android:textSize="13sp"
                 android:textAllCaps="false" android:padding="0dp" android:minWidth="0dp" app:cornerRadius="10dp" />
         </LinearLayout>
 
