@@ -1408,19 +1408,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setAppLocale(langCode: String) {
-        val locale = java.util.Locale(langCode)
-        java.util.Locale.setDefault(locale)
-        val config = resources.configuration
-        config.setLocale(locale)
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(config, resources.displayMetrics)
+        // No-op — locale is applied in attachBaseContext on recreate()
     }
 
     override fun attachBaseContext(newBase: android.content.Context) {
         val prefs = newBase.getSharedPreferences("bicilona_prefs", MODE_PRIVATE)
         val lang = prefs.getString("app_language", "en") ?: "en"
         val locale = java.util.Locale(lang)
-        val config = newBase.resources.configuration
+        java.util.Locale.setDefault(locale)
+        val config = android.content.res.Configuration(newBase.resources.configuration)
         config.setLocale(locale)
         super.attachBaseContext(newBase.createConfigurationContext(config))
     }
