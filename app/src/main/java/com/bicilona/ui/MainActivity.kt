@@ -114,7 +114,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dotOrange: BitmapDescriptor
     private lateinit var dotRed: BitmapDescriptor
     private lateinit var dotGray: BitmapDescriptor
-    private lateinit var dotBlue: BitmapDescriptor
+    private lateinit var highlightGreen: BitmapDescriptor
+    private lateinit var highlightOrange: BitmapDescriptor
+    private lateinit var highlightRed: BitmapDescriptor
+    private lateinit var highlightGray: BitmapDescriptor
     private lateinit var dotPurple: BitmapDescriptor
     private lateinit var starIcon: BitmapDescriptor
 
@@ -246,7 +249,10 @@ class MainActivity : AppCompatActivity() {
         dotOrange = MarkerFactory.createDot(this, Color.parseColor("#FF9800"), strokeColor = Color.WHITE)
         dotRed = MarkerFactory.createDot(this, Color.parseColor("#E30613"), strokeColor = Color.WHITE)
         dotGray = MarkerFactory.createDot(this, Color.GRAY, strokeColor = Color.WHITE)
-        dotBlue = MarkerFactory.createHighlightedDot(this, Color.parseColor("#2196F3"))
+        highlightGreen = MarkerFactory.createHighlightedDot(this, Color.parseColor("#4CAF50"))
+        highlightOrange = MarkerFactory.createHighlightedDot(this, Color.parseColor("#FF9800"))
+        highlightRed = MarkerFactory.createHighlightedDot(this, Color.parseColor("#E30613"))
+        highlightGray = MarkerFactory.createHighlightedDot(this, Color.GRAY)
         dotPurple = MarkerFactory.createHighlightedDot(this, Color.parseColor("#9C27B0"))
         starIcon = createStarIcon()
     }
@@ -753,7 +759,7 @@ class MainActivity : AppCompatActivity() {
         // Add or update markers
         stations.forEach { station ->
             val icon = when {
-                station.stationId == highlightId -> dotBlue
+                station.stationId == highlightId -> highlightedDotForStation(station)
                 !station.isOperational -> dotGray
                 viewModel.relevantBikeCount(station) == 0 -> dotRed
                 viewModel.relevantBikeCount(station) <= 3 -> dotOrange
@@ -882,11 +888,11 @@ class MainActivity : AppCompatActivity() {
         val pickup = route.pickupStation
         val dropoff = route.dropoffStation
 
-        // Pickup marker (blue)
+        // Pickup marker (availability color)
         pickupMarker = googleMap.addMarker(
             MarkerOptions()
                 .position(LatLng(pickup.lat, pickup.lon))
-                .icon(dotBlue)
+                .icon(highlightedDotForStation(pickup))
                 .anchor(0.5f, 0.5f)
                 .zIndex(3f)
                 .title(pickup.name)
@@ -1219,6 +1225,15 @@ class MainActivity : AppCompatActivity() {
         val totalElec = stations.sumOf { it.electricBikes }
         val totalDocks = stations.sumOf { it.docksAvailable }
         tvStats.text = getString(R.string.station_stats_fmt, stations.size, totalBikes, totalMech, totalElec, totalDocks)
+    }
+
+    private fun highlightedDotForStation(station: com.bicilona.data.model.BicilonaStation): BitmapDescriptor {
+        return when {
+            !station.isOperational -> highlightGray
+            viewModel.relevantBikeCount(station) == 0 -> highlightRed
+            viewModel.relevantBikeCount(station) <= 3 -> highlightOrange
+            else -> highlightGreen
+        }
     }
 
     private fun updateRadiusCircle() {
