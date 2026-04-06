@@ -320,6 +320,7 @@ class MainActivity : AppCompatActivity() {
 
         langButtons.forEach { (lang, btn) ->
             btn.setOnClickListener {
+                if (lang == savedLang) return@setOnClickListener
                 setAppLocale(lang)
                 getSharedPreferences("bicilona_prefs", MODE_PRIVATE)
                     .edit().putString("app_language", lang).apply()
