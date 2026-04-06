@@ -1,22 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bicilona</string>
+
+    <!-- Search -->
     <string name="search_destination">Where are you going?</string>
     <string name="find_route">Find Bicing Route</string>
     <string name="loading">Loading stations…</string>
+    <string name="getting_nearest_station">Getting nearest station…</string>
     <string name="error_location">Could not get your location</string>
     <string name="error_stations">Could not load Bicing stations</string>
+    <string name="no_results_found">No results found</string>
+    <string name="could_not_get_place">Could not get place details</string>
+
+    <!-- Station info -->
     <string name="pickup_label">🚲 Pick up bike here</string>
     <string name="dropoff_label">🅿️ Drop off bike here</string>
     <string name="bikes_available">%d bikes available</string>
     <string name="docks_available">%d docks available</string>
+    <string name="bikes_capacity">%1$d/%2$d bikes</string>
+    <string name="stale_warning">⚠️ Last updated %d min ago</string>
+
+    <!-- Route -->
     <string name="walk_to_pickup">Walk %s to pick up</string>
     <string name="ride_to_dropoff">Ride %s</string>
     <string name="walk_to_destination">Walk %s to destination</string>
+    <string name="label_walk">WALK</string>
+    <string name="label_ride">RIDE</string>
+    <string name="label_dropoff">DROP OFF</string>
+    <string name="label_destination">DESTINATION</string>
 
+    <!-- Empty state -->
+    <string name="no_stations_nearby">No stations nearby</string>
+    <string name="try_expanding_radius">Try increasing your search radius</string>
+    <string name="expand_radius">＋ Expand radius</string>
+    <string name="no_stations_in_range">No stations in range</string>
+
+    <!-- Bottom sheet actions -->
+    <string name="save_favorite">⭐ Save</string>
+    <string name="saved_favorite">⭐ Saved</string>
+    <string name="start_ride">Start ride  ↗</string>
+    <string name="stop_timer">⏹  Stop timer</string>
+    <string name="cancel_route">✕</string>
+
+    <!-- Timer -->
+    <string name="time_remaining">Time remaining</string>
+    <string name="ride_timer_label">ride timer</string>
+    <string name="return_bike_now">⚠️ Return bike NOW!</string>
+    <string name="min_left_find_station">⏰ %d min left — find a station!</string>
+    <string name="times_up">⚠️ Time\'s up — you\'re being charged!</string>
+    <string name="free_ride_exceeded">🚨 Free ride limit exceeded!</string>
+
+    <!-- Favourites -->
+    <string name="set_as_destination">Set as destination</string>
+    <string name="remove_from_favorites">Remove from favourites</string>
+    <string name="saved_favorite_toast">Saved ⭐ %s</string>
+    <string name="removed_favorite_toast">Removed ⭐ %s</string>
+
+    <!-- Dialogs -->
+    <string name="got_it">Got it</string>
+    <string name="cancel">Cancel</string>
+    <string name="how_bicilona_works">How Bicilona works</string>
+
+    <!-- Settings -->
+    <string name="settings_title">⚙️ Settings</string>
+    <string name="search_radius">Search Radius</string>
+    <string name="blocks_label">Blocks</string>
+    <string name="blk_unit">blk</string>
+    <string name="min_unit">min</string>
+    <string name="bike_type">Bike Type</string>
+    <string name="bike_type_all">All</string>
+    <string name="ride_timer">Ride Timer</string>
+    <string name="warn_me_at">Warn me at</string>
+    <string name="auto_redirect">Auto-redirect</string>
+    <string name="redirect_at">Redirect at</string>
+    <string name="map_legend">Map Legend</string>
+    <string name="legend_text">🟢  4+ bikes available\n🟠  1–3 bikes available\n🔴  No bikes available\n⚪  Station not operational\n🔵  Nearest / selected pickup\n🟣  Drop-off alternatives\n⭐  Favourite place\n🔘  Pulsing ring — suggested pickup</string>
+    <string name="reset_defaults">↩ Reset to defaults</string>
+    <string name="buy_me_coffee">☕ Buy me a coffee</string>
+    <string name="language">Language</string>
+
+    <!-- Notifications (RideTimerService) -->
+    <string name="notif_timer_title">🚲 Ride Timer: %s</string>
+    <string name="notif_timer_text">Free ride time remaining</string>
+    <string name="notif_stop_timer">Stop Timer</string>
+    <string name="notif_time_expired_title">🚨 Free ride time expired!</string>
+    <string name="notif_time_expired_text">You\'re now being charged extra</string>
+    <string name="notif_redirect_title">🚨 Redirecting to nearest station</string>
+    <string name="notif_redirect_text">Time is running out — navigating you to a dock</string>
+    <string name="notif_channel_timer">Ride Timer</string>
+    <string name="notif_channel_timer_desc">Shows remaining free ride time</string>
+    <string name="notif_channel_alert">Ride Timer Alert</string>
+    <string name="notif_channel_alert_desc">Alert when free ride time expires</string>
+    <string name="notif_channel_redirect">Ride Redirect</string>
+    <string name="notif_channel_redirect_desc">Navigates to nearest station when time is running out</string>
+
+    <!-- Help -->
     <string name="help_text"><![CDATA[<b>Bicilona</b> plans Bicing trips in Barcelona.<br/><br/>Search or long-press to set a destination. The app finds the best pickup and drop-off stations, shows a walk → ride → walk route, and launches Google Maps navigation.<br/><br/>Tap ⚙️ to adjust search radius, bike type, and ride timer. Tap ⭐ on the map to manage your favourites.]]></string>
-
     <string name="help_radius">How many blocks around you to search for stations. The blue circle on the map shows this area.\n\nAlso controls where drop-off alternatives (purple dots) appear near your destination.</string>
     <string name="help_bike_type">Filter stations by bike type. Station dot colours and route suggestions update to reflect your preference.\n\nAll = mechanical + electric\n⚙️ = mechanical only\n⚡ = electric only</string>
     <string name="help_timer">Bicing free rides are 30 minutes. The timer runs as a notification (works in your pocket) and vibrates your phone at the warning time.\n\nIf auto-redirect is on, it wakes your phone and launches Google Maps navigation to the nearest station with free docks — syncs to your watch too.</string>
+
+    <!-- Dynamic content -->
+    <string name="station_pin">📌 %s</string>
+    <string name="distance_approx">~%dm</string>
+    <string name="route_summary_fmt">%1$s walk → %2$s ride → %3$s walk</string>
+    <string name="ride_info_fmt">%1$s · %2$s</string>
+    <string name="docks_capacity">%1$d/%2$d docks free</string>
+    <string name="dest_walk_fmt">%1$s · %2$s walk</string>
+    <string name="station_stats_fmt">%1$d stations nearby\n🚲 %2$d bikes (⚙️ %3$d · ⚡ %4$d) · 🅿️ %5$d docks</string>
 </resources>

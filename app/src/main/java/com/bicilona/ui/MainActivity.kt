@@ -204,7 +204,7 @@ class MainActivity : AppCompatActivity() {
         btnResetPickup.setOnClickListener {
             viewModel.clearSelectedPickup()
             btnResetPickup.visibility = View.GONE
-            tvCurrentLocation.text = "Getting nearest station…"
+            tvCurrentLocation.text = getString(R.string.getting_nearest_station)
         }
 
         // Save favorite button
@@ -293,13 +293,13 @@ class MainActivity : AppCompatActivity() {
 
         // Setting help buttons
         findViewById<View>(R.id.btnHelpRadius).setOnClickListener {
-            showSettingHelp("Search Radius", R.string.help_radius)
+            showSettingHelp(getString(R.string.search_radius), R.string.help_radius)
         }
         findViewById<View>(R.id.btnHelpBikeType).setOnClickListener {
-            showSettingHelp("Bike Type", R.string.help_bike_type)
+            showSettingHelp(getString(R.string.bike_type), R.string.help_bike_type)
         }
         findViewById<View>(R.id.btnHelpTimer).setOnClickListener {
-            showSettingHelp("Ride Timer", R.string.help_timer)
+            showSettingHelp(getString(R.string.ride_timer), R.string.help_timer)
         }
 
         // Version label
@@ -307,6 +307,25 @@ class MainActivity : AppCompatActivity() {
             val pInfo = packageManager.getPackageInfo(packageName, 0)
             findViewById<TextView>(R.id.tvVersion).text = "Bicilona v${pInfo.versionName}"
         } catch (_: Exception) { }
+
+        // Language selector
+        val langButtons = mapOf(
+            "en" to findViewById<MaterialButton>(R.id.btnLangEn),
+            "es" to findViewById<MaterialButton>(R.id.btnLangEs),
+            "ca" to findViewById<MaterialButton>(R.id.btnLangCa)
+        )
+        val savedLang = getSharedPreferences("bicilona_prefs", MODE_PRIVATE)
+            .getString("app_language", "en") ?: "en"
+        updateLanguageButtons(langButtons, savedLang)
+
+        langButtons.forEach { (lang, btn) ->
+            btn.setOnClickListener {
+                setAppLocale(lang)
+                getSharedPreferences("bicilona_prefs", MODE_PRIVATE)
+                    .edit().putString("app_language", lang).apply()
+                recreate()
+            }
+        }
 
         // Timer settings
         val tvWarning = findViewById<TextView>(R.id.tvWarningValue)
@@ -469,7 +488,7 @@ class MainActivity : AppCompatActivity() {
                     val fillPercent = (station.bikesAvailable * 100) / station.capacity
                     capacityBar.max = 100
                     capacityBar.progress = fillPercent
-                    capacityLabel.text = "${station.bikesAvailable}/${station.capacity} bikes"
+                    capacityLabel.text = getString(R.string.bikes_capacity, station.bikesAvailable, station.capacity)
                 } else {
                     capacityBar.visibility = View.GONE
                     capacityLabel.visibility = View.GONE
@@ -481,7 +500,7 @@ class MainActivity : AppCompatActivity() {
                 if (station.isStale(nowEpoch)) {
                     tvStale.visibility = View.VISIBLE
                     val minsAgo = station.lastReported?.let { (nowEpoch - it) / 60 } ?: 0
-                    tvStale.text = "⚠️ Last updated ${minsAgo} min ago"
+                    tvStale.text = getString(R.string.stale_warning, minsAgo.toInt())
                 }
 
                 return view
@@ -629,13 +648,13 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.selectedPickup.observe(this) { station ->
             if (station != null) {
-                tvCurrentLocation.text = "📌 ${station.name}"
+                tvCurrentLocation.text = getString(R.string.station_pin, station.name)
                 btnResetPickup.visibility = View.VISIBLE
                 pulseOnStation(station)
             } else {
                 btnResetPickup.visibility = View.GONE
                 val nearest = viewModel.nearestStation.value
-                tvCurrentLocation.text = nearest?.name ?: "Getting nearest station…"
+                tvCurrentLocation.text = nearest?.name ?: getString(R.string.getting_nearest_station)
                 if (nearest != null) {
                     pulseOnStation(nearest)
                 } else {
@@ -673,7 +692,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.blockRadius.observe(this) { blocks ->
             tvBlockCount.text = blocks.toString()
-            tvBlockDistance.text = "~${(blocks * MainViewModel.METERS_PER_BLOCK).toInt()}m"
+            tvBlockDistance.text = getString(R.string.distance_approx, (blocks * MainViewModel.METERS_PER_BLOCK).toInt())
             updateRadiusCircle()
         }
 
@@ -954,14 +973,14 @@ class MainActivity : AppCompatActivity() {
         val destMin = parseMinutes(destTime)
         val totalMin = walkMin + rideMin + destMin
         tvTotalTime.text = if (totalMin > 0) "${totalMin} min" else "Calculating…"
-        tvRouteSummary.text = "$walkTime walk → $rideTime ride → $destTime walk"
+        tvRouteSummary.text = getString(R.string.route_summary_fmt, walkTime, rideTime, destTime)
 
         tvPickupStation.text = pickup.name
-        tvPickupInfo.text = "$walkDist · $walkTime · ${viewModel.relevantBikeCount(pickup)}/${pickup.capacity} bikes"
-        tvRideInfo.text = "$rideDist · $rideTime"
+        tvPickupInfo.text = "$walkDist · $walkTime · ${getString(R.string.bikes_capacity, viewModel.relevantBikeCount(pickup), pickup.capacity)}"
+        tvRideInfo.text = getString(R.string.ride_info_fmt, rideDist, rideTime)
         tvDropoffStation.text = dropoff.name
-        tvDropoffInfo.text = "${dropoff.docksAvailable}/${dropoff.capacity} docks free"
-        tvDestWalkInfo.text = "$destDist · $destTime walk"
+        tvDropoffInfo.text = getString(R.string.docks_capacity, dropoff.docksAvailable, dropoff.capacity)
+        tvDestWalkInfo.text = getString(R.string.dest_walk_fmt, destDist, destTime)
 
         // Show bottom sheet
         bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -1060,7 +1079,7 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Fetch place failed", e)
-                Toast.makeText(this, "Could not get place details", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.could_not_get_place), Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -1084,7 +1103,7 @@ class MainActivity : AppCompatActivity() {
                 if (first != null) {
                     fetchPlaceAndRoute(first)
                 } else {
-                    Toast.makeText(this, "No results found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.no_results_found), Toast.LENGTH_SHORT).show()
                 }
             }
     }
@@ -1106,7 +1125,7 @@ class MainActivity : AppCompatActivity() {
     private fun showFavoriteOptionsDialog(favorite: FavoritePlace) {
         MaterialAlertDialogBuilder(this)
             .setTitle("⭐ ${favorite.name}")
-            .setItems(arrayOf("🗺️ Set as destination", "🗑️ Remove from favorites")) { _, which ->
+            .setItems(arrayOf("🗺️ ${getString(R.string.set_as_destination)}", "🗑️ ${getString(R.string.remove_from_favorites)}")) { _, which ->
                 when (which) {
                     0 -> {
                         val latLng = LatLng(favorite.lat, favorite.lon)
@@ -1115,7 +1134,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     1 -> {
                         viewModel.deleteFavorite(favorite)
-                        Toast.makeText(this, "Removed ⭐ ${favorite.name}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, getString(R.string.removed_favorite_toast, favorite.name), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -1133,7 +1152,7 @@ class MainActivity : AppCompatActivity() {
                 .text?.toString()?.trim() ?: ""
             if (name.isNotBlank()) {
                 viewModel.saveFavorite(name, destination.latitude, destination.longitude)
-                Toast.makeText(this, "Saved ⭐ $name", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.saved_favorite_toast, name), Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
         }
@@ -1189,15 +1208,14 @@ class MainActivity : AppCompatActivity() {
     private fun updateStationStats(stations: List<BicilonaStation>) {
         val tvStats = findViewById<TextView>(R.id.tvStationStats)
         if (stations.isEmpty()) {
-            tvStats.text = "No stations in range"
+            tvStats.text = getString(R.string.no_stations_in_range)
             return
         }
         val totalBikes = stations.sumOf { it.bikesAvailable }
         val totalMech = stations.sumOf { it.mechanicalBikes }
         val totalElec = stations.sumOf { it.electricBikes }
         val totalDocks = stations.sumOf { it.docksAvailable }
-        tvStats.text = "${stations.size} stations nearby\n" +
-            "🚲 $totalBikes bikes (⚙️ $totalMech · ⚡ $totalElec) · 🅿️ $totalDocks docks"
+        tvStats.text = getString(R.string.station_stats_fmt, stations.size, totalBikes, totalMech, totalElec, totalDocks)
     }
 
     private fun updateRadiusCircle() {
@@ -1263,7 +1281,7 @@ class MainActivity : AppCompatActivity() {
         tvPeekCountdown.text = String.format("%02d:%02d", limitMinutes, 0)
         tvCountdown.setTextColor(Color.parseColor("#4CAF50"))
         tvPeekCountdown.setTextColor(Color.parseColor("#4CAF50"))
-        tvLabel.text = "Time remaining"
+        tvLabel.text = getString(R.string.time_remaining)
 
         // Request notification permission (Android 13+)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
@@ -1287,11 +1305,11 @@ class MainActivity : AppCompatActivity() {
 
             val color = when {
                 redirectThreshold > 0 && secsLeft <= redirectThreshold -> {
-                    tvLabel.text = "⚠️ Return bike NOW!"
+                    tvLabel.text = getString(R.string.return_bike_now)
                     Color.parseColor("#E30613")
                 }
                 secsLeft <= warningThreshold -> {
-                    tvLabel.text = "⏰ ${mins} min left — find a station!"
+                    tvLabel.text = getString(R.string.min_left_find_station, mins)
                     Color.parseColor("#FF9800")
                 }
                 else -> null
@@ -1304,7 +1322,7 @@ class MainActivity : AppCompatActivity() {
 
         RideTimerService.onWarning = {
             val remaining = limitMinutes - warningAtMinutes
-            Toast.makeText(this, "⏰ $remaining min left — find a station!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.min_left_find_station, remaining), Toast.LENGTH_LONG).show()
         }
 
         RideTimerService.onRedirect = {
@@ -1322,8 +1340,8 @@ class MainActivity : AppCompatActivity() {
             tvPeekCountdown.text = "00:00"
             tvCountdown.setTextColor(Color.parseColor("#E30613"))
             tvPeekCountdown.setTextColor(Color.parseColor("#E30613"))
-            tvLabel.text = "⚠️ Time's up — you're being charged!"
-            Toast.makeText(this, "🚨 Free ride limit exceeded!", Toast.LENGTH_LONG).show()
+            tvLabel.text = getString(R.string.times_up)
+            Toast.makeText(this, getString(R.string.free_ride_exceeded), Toast.LENGTH_LONG).show()
         }
 
         // Start foreground service
@@ -1362,9 +1380,9 @@ class MainActivity : AppCompatActivity() {
             android.text.Html.FROM_HTML_MODE_COMPACT
         )
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("How Bicilona works")
+            .setTitle(getString(R.string.how_bicilona_works))
             .setMessage(message)
-            .setPositiveButton("Got it", null)
+            .setPositiveButton(getString(R.string.got_it), null)
             .show()
     }
 
@@ -1372,8 +1390,38 @@ class MainActivity : AppCompatActivity() {
         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle(title)
             .setMessage(getString(messageResId))
-            .setPositiveButton("Got it", null)
+            .setPositiveButton(getString(R.string.got_it), null)
             .show()
+    }
+
+    private fun updateLanguageButtons(buttons: Map<String, MaterialButton>, activeLang: String) {
+        buttons.forEach { (lang, btn) ->
+            if (lang == activeLang) {
+                btn.setBackgroundColor(android.graphics.Color.parseColor("#4285F4"))
+                btn.setTextColor(android.graphics.Color.WHITE)
+            } else {
+                btn.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                btn.setTextColor(android.graphics.Color.parseColor("#1A1A2E"))
+            }
+        }
+    }
+
+    private fun setAppLocale(langCode: String) {
+        val locale = java.util.Locale(langCode)
+        java.util.Locale.setDefault(locale)
+        val config = resources.configuration
+        config.setLocale(locale)
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(config, resources.displayMetrics)
+    }
+
+    override fun attachBaseContext(newBase: android.content.Context) {
+        val prefs = newBase.getSharedPreferences("bicilona_prefs", MODE_PRIVATE)
+        val lang = prefs.getString("app_language", "en") ?: "en"
+        val locale = java.util.Locale(lang)
+        val config = newBase.resources.configuration
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
     }
 
     private fun showFavoritesDropdown() {
@@ -1396,11 +1444,11 @@ class MainActivity : AppCompatActivity() {
     private fun updateSaveFavoriteButton() {
         val btn = findViewById<MaterialButton>(R.id.btnSaveFavorite)
         if (isCurrentDestinationFavorite()) {
-            btn.text = "⭐ Saved"
+            btn.text = getString(R.string.saved_favorite)
             btn.alpha = 0.5f
             btn.isClickable = false
         } else {
-            btn.text = "⭐ Save"
+            btn.text = getString(R.string.save_favorite)
             btn.alpha = 1f
             btn.isClickable = true
         }

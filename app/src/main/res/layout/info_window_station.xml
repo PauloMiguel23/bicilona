@@ -87,6 +87,6 @@
         android:textSize="11sp"
         android:textColor="#E65100"
         android:visibility="gone"
-        android:text="⚠️ Data may be outdated" />
+        android:text="@string/stale_warning" />
 
 </LinearLayout>

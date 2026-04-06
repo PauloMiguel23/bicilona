@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bicilona</string>
+
+    <!-- Search -->
+    <string name="search_destination">¿A dónde vas?</string>
+    <string name="find_route">Buscar ruta Bicing</string>
+    <string name="loading">Cargando estaciones…</string>
+    <string name="getting_nearest_station">Buscando estación más cercana…</string>
+    <string name="error_location">No se pudo obtener tu ubicación</string>
+    <string name="error_stations">No se pudieron cargar las estaciones Bicing</string>
+    <string name="no_results_found">No se encontraron resultados</string>
+    <string name="could_not_get_place">No se pudieron obtener los detalles del lugar</string>
+
+    <!-- Station info -->
+    <string name="pickup_label">🚲 Recoger bici aquí</string>
+    <string name="dropoff_label">🅿️ Dejar bici aquí</string>
+    <string name="bikes_available">%d bicis disponibles</string>
+    <string name="docks_available">%d anclajes disponibles</string>
+    <string name="bikes_capacity">%1$d/%2$d bicis</string>
+    <string name="stale_warning">⚠️ Actualizado hace %d min</string>
+
+    <!-- Route -->
+    <string name="walk_to_pickup">Caminar %s hasta recoger</string>
+    <string name="ride_to_dropoff">Pedalear %s</string>
+    <string name="walk_to_destination">Caminar %s hasta destino</string>
+    <string name="label_walk">CAMINAR</string>
+    <string name="label_ride">PEDALEAR</string>
+    <string name="label_dropoff">DEJAR BICI</string>
+    <string name="label_destination">DESTINO</string>
+
+    <!-- Empty state -->
+    <string name="no_stations_nearby">No hay estaciones cerca</string>
+    <string name="try_expanding_radius">Intenta aumentar el radio de búsqueda</string>
+    <string name="expand_radius">＋ Ampliar radio</string>
+    <string name="no_stations_in_range">No hay estaciones en el rango</string>
+
+    <!-- Bottom sheet actions -->
+    <string name="save_favorite">⭐ Guardar</string>
+    <string name="saved_favorite">⭐ Guardado</string>
+    <string name="start_ride">Iniciar viaje  ↗</string>
+    <string name="stop_timer">⏹  Parar temporizador</string>
+    <string name="cancel_route">✕</string>
+
+    <!-- Timer -->
+    <string name="time_remaining">Tiempo restante</string>
+    <string name="ride_timer_label">temporizador</string>
+    <string name="return_bike_now">⚠️ ¡Devuelve la bici YA!</string>
+    <string name="min_left_find_station">⏰ %d min — ¡busca una estación!</string>
+    <string name="times_up">⚠️ ¡Se acabó el tiempo — te están cobrando!</string>
+    <string name="free_ride_exceeded">🚨 ¡Límite de viaje gratuito superado!</string>
+
+    <!-- Favourites -->
+    <string name="set_as_destination">Establecer como destino</string>
+    <string name="remove_from_favorites">Eliminar de favoritos</string>
+    <string name="saved_favorite_toast">Guardado ⭐ %s</string>
+    <string name="removed_favorite_toast">Eliminado ⭐ %s</string>
+
+    <!-- Dialogs -->
+    <string name="got_it">Entendido</string>
+    <string name="cancel">Cancelar</string>
+    <string name="how_bicilona_works">Cómo funciona Bicilona</string>
+
+    <!-- Settings -->
+    <string name="settings_title">⚙️ Ajustes</string>
+    <string name="search_radius">Radio de búsqueda</string>
+    <string name="blocks_label">Manzanas</string>
+    <string name="blk_unit">mnz</string>
+    <string name="min_unit">min</string>
+    <string name="bike_type">Tipo de bici</string>
+    <string name="bike_type_all">Todas</string>
+    <string name="ride_timer">Temporizador</string>
+    <string name="warn_me_at">Avisar a los</string>
+    <string name="auto_redirect">Auto-redirección</string>
+    <string name="redirect_at">Redirigir a los</string>
+    <string name="map_legend">Leyenda del mapa</string>
+    <string name="legend_text">🟢  4+ bicis disponibles\n🟠  1–3 bicis disponibles\n🔴  Sin bicis\n⚪  Estación fuera de servicio\n🔵  Recogida más cercana / seleccionada\n🟣  Alternativas para dejar bici\n⭐  Lugar favorito\n🔘  Anillo pulsante — recogida sugerida</string>
+    <string name="reset_defaults">↩ Restablecer valores</string>
+    <string name="buy_me_coffee">☕ Invítame a un café</string>
+    <string name="language">Idioma</string>
+
+    <!-- Notifications -->
+    <string name="notif_timer_title">🚲 Temporizador: %s</string>
+    <string name="notif_timer_text">Tiempo de viaje gratuito restante</string>
+    <string name="notif_stop_timer">Parar temporizador</string>
+    <string name="notif_time_expired_title">🚨 ¡Tiempo de viaje gratuito agotado!</string>
+    <string name="notif_time_expired_text">Ahora te están cobrando de más</string>
+    <string name="notif_redirect_title">🚨 Redirigiendo a la estación más cercana</string>
+    <string name="notif_redirect_text">Se acaba el tiempo — navegando hacia un anclaje</string>
+    <string name="notif_channel_timer">Temporizador</string>
+    <string name="notif_channel_timer_desc">Muestra el tiempo de viaje gratuito restante</string>
+    <string name="notif_channel_alert">Alerta de temporizador</string>
+    <string name="notif_channel_alert_desc">Alerta cuando se agota el tiempo de viaje gratuito</string>
+    <string name="notif_channel_redirect">Redirección</string>
+    <string name="notif_channel_redirect_desc">Navega a la estación más cercana cuando el tiempo se agota</string>
+
+    <!-- Help -->
+    <string name="help_text"><![CDATA[<b>Bicilona</b> planifica viajes en Bicing por Barcelona.<br/><br/>Busca o mantén pulsado para elegir un destino. La app encuentra las mejores estaciones de recogida y entrega, muestra una ruta caminar → pedalear → caminar, y abre la navegación en Google Maps.<br/><br/>Toca ⚙️ para ajustar el radio de búsqueda, tipo de bici y temporizador. Toca ⭐ en el mapa para gestionar tus favoritos.]]></string>
+    <string name="help_radius">Cuántas manzanas a tu alrededor buscar estaciones. El círculo azul en el mapa muestra esta zona.\n\nTambién controla dónde aparecen las alternativas para dejar bici (puntos morados) cerca de tu destino.</string>
+    <string name="help_bike_type">Filtra estaciones por tipo de bici. Los colores de los puntos y las sugerencias de ruta reflejan tu preferencia.\n\nTodas = mecánicas + eléctricas\n⚙️ = solo mecánicas\n⚡ = solo eléctricas</string>
+    <string name="help_timer">Los viajes gratuitos en Bicing son de 30 minutos. El temporizador funciona como notificación (funciona en el bolsillo) y vibra al llegar al tiempo de aviso.\n\nSi la auto-redirección está activada, despierta el móvil y abre la navegación de Google Maps hacia la estación más cercana con anclajes libres — también se sincroniza con tu reloj.</string>
+
+    <!-- Dynamic content -->
+    <string name="station_pin">📌 %s</string>
+    <string name="distance_approx">~%dm</string>
+    <string name="route_summary_fmt">%1$s caminar → %2$s pedalear → %3$s caminar</string>
+    <string name="ride_info_fmt">%1$s · %2$s</string>
+    <string name="docks_capacity">%1$d/%2$d anclajes libres</string>
+    <string name="dest_walk_fmt">%1$s · %2$s caminando</string>
+    <string name="station_stats_fmt">%1$d estaciones cerca\n🚲 %2$d bicis (⚙️ %3$d · ⚡ %4$d) · 🅿️ %5$d anclajes</string>
+</resources>

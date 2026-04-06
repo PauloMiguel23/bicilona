@@ -50,6 +50,15 @@ class RideTimerService : Service() {
     private var redirectSeconds = 0
     private var totalSeconds = 0
 
+    override fun attachBaseContext(newBase: Context) {
+        val prefs = newBase.getSharedPreferences("bicilona_prefs", Context.MODE_PRIVATE)
+        val lang = prefs.getString("app_language", "en") ?: "en"
+        val locale = java.util.Locale(lang)
+        val config = newBase.resources.configuration
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
@@ -139,10 +148,10 @@ class RideTimerService : Service() {
         // Create a high-priority channel for the redirect alert
         val redirectChannel = NotificationChannel(
             "ride_redirect_channel",
-            "Ride Redirect",
+            getString(R.string.notif_channel_redirect),
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
-            description = "Navigates to nearest station when time is running out"
+            description = getString(R.string.notif_channel_redirect_desc)
             enableVibration(true)
         }
         val nm = getSystemService(NotificationManager::class.java)
@@ -165,8 +174,8 @@ class RideTimerService : Service() {
         // - Show a heads-up notification (screen on) — tap to navigate
         val notification = NotificationCompat.Builder(this, "ride_redirect_channel")
             .setSmallIcon(R.drawable.ic_bike_foreground)
-            .setContentTitle("🚨 Redirecting to nearest station")
-            .setContentText("Time is running out — navigating you to a dock")
+            .setContentTitle(getString(R.string.notif_redirect_title))
+            .setContentText(getString(R.string.notif_redirect_text))
             .setFullScreenIntent(fullScreenPi, true)
             .setContentIntent(fullScreenPi)
             .setAutoCancel(true)
@@ -197,10 +206,10 @@ class RideTimerService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Ride Timer",
+            getString(R.string.notif_channel_timer),
             NotificationManager.IMPORTANCE_LOW
         ).apply {
-            description = "Shows remaining free ride time"
+            description = getString(R.string.notif_channel_timer_desc)
             setShowBadge(false)
         }
         val nm = getSystemService(NotificationManager::class.java)
@@ -228,10 +237,10 @@ class RideTimerService : Service() {
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_bike_foreground)
-            .setContentTitle("🚲 Ride Timer: $timeStr")
-            .setContentText("Free ride time remaining")
+            .setContentTitle(getString(R.string.notif_timer_title, timeStr))
+            .setContentText(getString(R.string.notif_timer_text))
             .setContentIntent(contentIntent)
-            .addAction(0, "Stop Timer", stopIntent)
+            .addAction(0, getString(R.string.notif_stop_timer), stopIntent)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
@@ -248,10 +257,10 @@ class RideTimerService : Service() {
     private fun updateNotificationFinished() {
         val alertChannel = NotificationChannel(
             "ride_timer_alert",
-            "Ride Timer Alert",
+            getString(R.string.notif_channel_alert),
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
-            description = "Alert when free ride time expires"
+            description = getString(R.string.notif_channel_alert_desc)
             enableVibration(true)
         }
         val nm = getSystemService(NotificationManager::class.java)
@@ -267,8 +276,8 @@ class RideTimerService : Service() {
 
         val notification = NotificationCompat.Builder(this, "ride_timer_alert")
             .setSmallIcon(R.drawable.ic_bike_foreground)
-            .setContentTitle("🚨 Free ride time expired!")
-            .setContentText("You're now being charged extra")
+            .setContentTitle(getString(R.string.notif_time_expired_title))
+            .setContentText(getString(R.string.notif_time_expired_text))
             .setContentIntent(contentIntent)
             .setOngoing(false)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
