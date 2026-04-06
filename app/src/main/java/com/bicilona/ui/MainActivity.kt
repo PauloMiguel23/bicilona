@@ -220,6 +220,8 @@ class MainActivity : AppCompatActivity() {
             val route = viewModel.route.value ?: return@setOnClickListener
             LocationUtils.launchGoogleMapsNavigation(
                 this,
+                route.pickupStation.lat,
+                route.pickupStation.lon,
                 route.dropoffStation.lat,
                 route.dropoffStation.lon
             )

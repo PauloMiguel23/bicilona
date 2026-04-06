@@ -85,10 +85,17 @@ object LocationUtils {
      */
     fun launchGoogleMapsNavigation(
         context: android.content.Context,
+        originLat: Double,
+        originLon: Double,
         destLat: Double,
         destLon: Double
     ) {
-        val uri = android.net.Uri.parse("google.navigation:q=$destLat,$destLon&mode=b")
+        val uri = android.net.Uri.parse(
+            "https://www.google.com/maps/dir/?api=1" +
+            "&origin=$originLat,$originLon" +
+            "&destination=$destLat,$destLon" +
+            "&travelmode=bicycling"
+        )
         val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri).apply {
             setPackage("com.google.android.apps.maps")
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -96,8 +103,7 @@ object LocationUtils {
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {
-            // Fallback to directions URL
-            launchGoogleMapsDirections(context, destLat, destLon, destLat, destLon)
+            context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, uri))
         }
     }
 }
