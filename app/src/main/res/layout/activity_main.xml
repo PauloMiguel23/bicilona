@@ -961,7 +961,7 @@
                 android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
                 android:layout_marginStart="4dp" android:text="CA" android:textSize="13sp"
                 android:textAllCaps="false" android:padding="0dp" android:minWidth="0dp" app:cornerRadius="10dp"
-                app:icon="@drawable/ic_flag_cat" app:iconSize="18dp" app:iconGravity="textStart" app:iconPadding="4dp" />
+                app:icon="@drawable/ic_flag_cat" app:iconSize="18dp" app:iconGravity="textStart" app:iconPadding="4dp" app:iconTint="@null" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
