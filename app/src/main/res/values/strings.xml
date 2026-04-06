@@ -53,6 +53,7 @@
     <!-- Favourites -->
     <string name="set_as_destination">Set as destination</string>
     <string name="remove_from_favorites">Remove from favourites</string>
+    <string name="remove">Remove</string>
     <string name="saved_favorite_toast">Saved ⭐ %s</string>
     <string name="removed_favorite_toast">Removed ⭐ %s</string>
 

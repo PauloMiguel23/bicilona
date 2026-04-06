@@ -27,40 +27,66 @@
         android:layout_marginTop="10dp"
         android:gravity="center">
 
-        <!-- Set as destination (directions arrow) -->
-        <ImageView
+        <!-- Set as destination -->
+        <LinearLayout
             android:id="@+id/btnSetDestination"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_directions"
-            android:adjustViewBounds="true"
+            android:orientation="vertical"
+            android:gravity="center"
             android:paddingVertical="6dp"
-            android:paddingHorizontal="12dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="@string/set_as_destination" />
+            android:focusable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍"
+                android:textSize="24sp" />
+            <TextView
+                android:id="@+id/tvSetDestLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/set_as_destination"
+                android:textSize="10sp"
+                android:textColor="#757575"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
 
         <!-- Divider -->
         <View
             android:layout_width="1dp"
             android:layout_height="28dp"
+            android:layout_gravity="center_vertical"
             android:background="#D0D0D0" />
 
         <!-- Remove from favorites -->
-        <TextView
+        <LinearLayout
             android:id="@+id/btnRemoveFavorite"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🗑️"
-            android:textSize="24sp"
+            android:orientation="vertical"
             android:gravity="center"
             android:paddingVertical="6dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🗑️"
+                android:textSize="24sp" />
+            <TextView
+                android:id="@+id/tvRemoveLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remove"
+                android:textSize="10sp"
+                android:textColor="#757575"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
