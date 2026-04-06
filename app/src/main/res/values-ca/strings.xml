@@ -53,6 +53,7 @@
     <!-- Favourites -->
     <string name="set_as_destination">Establir com a destí</string>
     <string name="remove_from_favorites">Eliminar de favorits</string>
+    <string name="remove">Eliminar</string>
     <string name="saved_favorite_toast">Desat ⭐ %s</string>
     <string name="removed_favorite_toast">Eliminat ⭐ %s</string>
 
