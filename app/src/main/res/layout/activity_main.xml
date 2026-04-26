@@ -1014,7 +1014,7 @@
             android:minHeight="0dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:cornerRadius="10dp" />
 
         <!-- Version (pinned to bottom) -->

@@ -298,7 +298,7 @@ class MainActivity : AppCompatActivity() {
         // Support button (hidden — set visibility to VISIBLE to enable)
         findViewById<MaterialButton>(R.id.btnSupportCoffee).setOnClickListener {
             // TODO: replace with your actual Buy Me a Coffee / Ko-fi URL
-            val url = "https://buymeacoffee.com/bicilona"
+            val url = "https://buymeacoffee.com/anolddog"
             try {
                 startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
             } catch (_: Exception) {}
