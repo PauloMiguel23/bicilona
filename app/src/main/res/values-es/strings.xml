@@ -33,6 +33,7 @@
     <string name="no_stations_nearby">No hay estaciones cerca</string>
     <string name="try_expanding_radius">Intenta aumentar el radio de búsqueda</string>
     <string name="expand_radius">＋ Ampliar radio</string>
+    <string name="retry">↻ Reintentar</string>
     <string name="no_stations_in_range">No hay estaciones en el rango</string>
 
     <!-- Bottom sheet actions -->

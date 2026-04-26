@@ -168,6 +168,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnExpandRadius).setOnClickListener {
             viewModel.incrementBlocks()
         }
+        findViewById<View>(R.id.btnRetry).setOnClickListener {
+            viewModel.loadStations()
+        }
 
         // Bottom sheet views
         tvTotalTime = findViewById(R.id.tvTotalTime)

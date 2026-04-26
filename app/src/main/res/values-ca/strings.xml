@@ -33,6 +33,7 @@
     <string name="no_stations_nearby">No hi ha estacions a prop</string>
     <string name="try_expanding_radius">Prova d\'augmentar el radi de cerca</string>
     <string name="expand_radius">＋ Ampliar radi</string>
+    <string name="retry">↻ Reintentar</string>
     <string name="no_stations_in_range">No hi ha estacions en el rang</string>
 
     <!-- Bottom sheet actions -->
