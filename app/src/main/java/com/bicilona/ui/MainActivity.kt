@@ -1071,6 +1071,12 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "Place autocomplete failed for '$query'", e)
+                val reason = if (e is com.google.android.gms.common.api.ApiException) {
+                    "Places API error ${e.statusCode}: ${e.message}"
+                } else {
+                    e.message ?: "Places search failed"
+                }
+                Toast.makeText(this, reason, Toast.LENGTH_LONG).show()
             }
     }
 
