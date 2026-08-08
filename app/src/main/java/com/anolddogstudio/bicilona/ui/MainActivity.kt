@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
@@ -21,6 +22,9 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.anolddogstudio.bicilona.R
 import com.anolddogstudio.bicilona.data.db.FavoritePlace
@@ -134,7 +138,9 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.setMapsApiKey(apiKey)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         initViews()
+        setupWindowInsets()
         initBottomSheet()
         initSettingsDrawer()
         initSearch()
@@ -155,6 +161,58 @@ class MainActivity : AppCompatActivity() {
     // ════════════════════════════════════════
     // Initialization
     // ════════════════════════════════════════
+
+    /**
+     * Android 15+ (targetSdk 35) enforces edge-to-edge and no longer lets the
+     * app opt out, so content draws behind the status/navigation bars by
+     * default. Keep the map full-bleed, but nudge the floating UI (search
+     * card, top-right buttons, bottom sheet, settings drawer) clear of the
+     * system bars using the actual inset values.
+     */
+    private fun setupWindowInsets() {
+        val topViews = listOf(
+            findViewById<View>(R.id.searchCard),
+            findViewById<View>(R.id.btnMyLocationCard),
+            findViewById<View>(R.id.btnSettingsCard),
+            findViewById<View>(R.id.btnHelpCard)
+        )
+        val originalTopMargins = topViews.map { (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin }
+
+        val bottomViews = listOf(
+            findViewById<View>(R.id.bottomSheet),
+            findViewById<View>(R.id.emptyStateCard)
+        )
+        val originalBottomMargins = bottomViews.map { (it.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin }
+
+        val settingsDrawerView = findViewById<View>(R.id.settingsDrawer)
+        val originalDrawerPaddingTop = settingsDrawerView.paddingTop
+        val originalDrawerPaddingBottom = settingsDrawerView.paddingBottom
+
+        ViewCompat.setOnApplyWindowInsetsListener(drawerLayout) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            topViews.forEachIndexed { index, view ->
+                val lp = view.layoutParams as ViewGroup.MarginLayoutParams
+                lp.topMargin = originalTopMargins[index] + systemBars.top
+                view.layoutParams = lp
+            }
+
+            bottomViews.forEachIndexed { index, view ->
+                val lp = view.layoutParams as ViewGroup.MarginLayoutParams
+                lp.bottomMargin = originalBottomMargins[index] + systemBars.bottom
+                view.layoutParams = lp
+            }
+
+            settingsDrawerView.setPadding(
+                settingsDrawerView.paddingLeft,
+                originalDrawerPaddingTop + systemBars.top,
+                settingsDrawerView.paddingRight,
+                originalDrawerPaddingBottom + systemBars.bottom
+            )
+
+            insets
+        }
+    }
 
     private fun initViews() {
         drawerLayout = findViewById(R.id.drawerLayout)
