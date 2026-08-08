@@ -1,4 +1,4 @@
-package com.bicilona.util
+package com.anolddogstudio.bicilona.util
 
 import android.content.Context
 import android.graphics.Bitmap

@@ -1,7 +1,7 @@
-package com.bicilona.data.api
+package com.anolddogstudio.bicilona.data.api
 
-import com.bicilona.data.model.StationInfoResponse
-import com.bicilona.data.model.StationStatusResponse
+import com.anolddogstudio.bicilona.data.model.StationInfoResponse
+import com.anolddogstudio.bicilona.data.model.StationStatusResponse
 import retrofit2.http.GET
 
 /**

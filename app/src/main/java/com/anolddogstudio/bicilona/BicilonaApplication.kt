@@ -1,4 +1,4 @@
-package com.bicilona
+package com.anolddogstudio.bicilona
 
 import android.app.Application
 

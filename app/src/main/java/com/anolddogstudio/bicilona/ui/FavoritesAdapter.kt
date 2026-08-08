@@ -1,4 +1,4 @@
-package com.bicilona.ui
+package com.anolddogstudio.bicilona.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,8 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bicilona.R
-import com.bicilona.data.db.FavoritePlace
+import com.anolddogstudio.bicilona.R
+import com.anolddogstudio.bicilona.data.db.FavoritePlace
 
 class FavoritesAdapter(
     private val onClick: (FavoritePlace) -> Unit,

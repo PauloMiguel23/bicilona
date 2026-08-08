@@ -1,4 +1,4 @@
-package com.bicilona.ui
+package com.anolddogstudio.bicilona.ui
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.TextView
-import com.bicilona.R
+import com.anolddogstudio.bicilona.R
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 
 class PlaceSuggestionAdapter(

@@ -1,11 +1,11 @@
-package com.bicilona.data.repository
+package com.anolddogstudio.bicilona.data.repository
 
-import com.bicilona.data.api.RetrofitClient
-import com.bicilona.data.model.BicilonaRoute
-import com.bicilona.data.model.BicilonaStation
-import com.bicilona.ui.BikeTypePreference
-import com.bicilona.util.LocationUtils
-import com.bicilona.util.PolylineDecoder
+import com.anolddogstudio.bicilona.data.api.RetrofitClient
+import com.anolddogstudio.bicilona.data.model.BicilonaRoute
+import com.anolddogstudio.bicilona.data.model.BicilonaStation
+import com.anolddogstudio.bicilona.ui.BikeTypePreference
+import com.anolddogstudio.bicilona.util.LocationUtils
+import com.anolddogstudio.bicilona.util.PolylineDecoder
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

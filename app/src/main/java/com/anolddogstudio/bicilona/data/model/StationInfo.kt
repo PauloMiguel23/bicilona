@@ -1,4 +1,4 @@
-package com.bicilona.data.model
+package com.anolddogstudio.bicilona.data.model
 
 import com.google.gson.annotations.SerializedName
 

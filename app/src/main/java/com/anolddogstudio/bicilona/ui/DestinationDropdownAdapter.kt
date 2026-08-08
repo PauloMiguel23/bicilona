@@ -1,4 +1,4 @@
-package com.bicilona.ui
+package com.anolddogstudio.bicilona.ui
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.ImageButton
 import android.widget.TextView
-import com.bicilona.R
-import com.bicilona.data.db.FavoritePlace
+import com.anolddogstudio.bicilona.R
+import com.anolddogstudio.bicilona.data.db.FavoritePlace
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 
 /**

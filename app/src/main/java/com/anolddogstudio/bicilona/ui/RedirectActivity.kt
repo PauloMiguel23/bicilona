@@ -1,4 +1,4 @@
-package com.bicilona.ui
+package com.anolddogstudio.bicilona.ui
 
 import android.app.KeyguardManager
 import android.content.Context

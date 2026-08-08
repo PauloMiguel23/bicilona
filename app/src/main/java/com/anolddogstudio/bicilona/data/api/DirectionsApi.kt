@@ -1,4 +1,4 @@
-package com.bicilona.data.api
+package com.anolddogstudio.bicilona.data.api
 
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.GET

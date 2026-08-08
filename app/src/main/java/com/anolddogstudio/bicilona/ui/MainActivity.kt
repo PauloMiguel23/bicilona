@@ -1,4 +1,4 @@
-package com.bicilona.ui
+package com.anolddogstudio.bicilona.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -22,14 +22,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.bicilona.R
-import com.bicilona.data.db.FavoritePlace
-import com.bicilona.data.model.BicilonaRoute
-import com.bicilona.data.model.BicilonaStation
-import com.bicilona.service.RideTimerService
-import com.bicilona.util.LocationUtils
-import com.bicilona.util.MarkerFactory
-import com.bicilona.util.PulseAnimator
+import com.anolddogstudio.bicilona.R
+import com.anolddogstudio.bicilona.data.db.FavoritePlace
+import com.anolddogstudio.bicilona.data.model.BicilonaRoute
+import com.anolddogstudio.bicilona.data.model.BicilonaStation
+import com.anolddogstudio.bicilona.service.RideTimerService
+import com.anolddogstudio.bicilona.util.LocationUtils
+import com.anolddogstudio.bicilona.util.MarkerFactory
+import com.anolddogstudio.bicilona.util.PulseAnimator
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -1248,7 +1248,7 @@ class MainActivity : AppCompatActivity() {
         tvStats.text = getString(R.string.station_stats_fmt, stations.size, totalBikes, totalMech, totalElec, totalDocks)
     }
 
-    private fun highlightedDotForStation(station: com.bicilona.data.model.BicilonaStation): BitmapDescriptor {
+    private fun highlightedDotForStation(station: com.anolddogstudio.bicilona.data.model.BicilonaStation): BitmapDescriptor {
         return when {
             !station.isOperational -> highlightGray
             viewModel.relevantBikeCount(station) == 0 -> highlightRed

@@ -12,15 +12,24 @@ val localProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.bicilona"
-    compileSdk = 34
+    namespace = "com.anolddogstudio.bicilona"
+    compileSdk = 35
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("anolddogstudio-bicilona.keystore")
+            storePassword = "PlayStore2024!"
+            keyAlias = "anolddogstudio-bicilona"
+            keyPassword = "PlayStore2024!"
+        }
+    }
 
     defaultConfig {
-        applicationId = "com.bicilona"
+        applicationId = "com.anolddogstudio.bicilona"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 35
+        versionCode = 2
+        versionName = "1.1"
 
         // Inject the API key into manifest placeholders
         manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY", "")
@@ -30,6 +39,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

@@ -1,4 +1,4 @@
-package com.bicilona.service
+package com.anolddogstudio.bicilona.service
 
 import android.app.*
 import android.content.Context
@@ -6,8 +6,8 @@ import android.content.Intent
 
 import android.os.*
 import androidx.core.app.NotificationCompat
-import com.bicilona.R
-import com.bicilona.ui.MainActivity
+import com.anolddogstudio.bicilona.R
+import com.anolddogstudio.bicilona.ui.MainActivity
 
 class RideTimerService : Service() {
 
@@ -15,8 +15,8 @@ class RideTimerService : Service() {
         const val CHANNEL_ID = "ride_timer_channel"
         const val NOTIFICATION_ID = 1001
 
-        const val ACTION_START = "com.bicilona.START_TIMER"
-        const val ACTION_STOP = "com.bicilona.STOP_TIMER"
+        const val ACTION_START = "com.anolddogstudio.bicilona.START_TIMER"
+        const val ACTION_STOP = "com.anolddogstudio.bicilona.STOP_TIMER"
 
         const val EXTRA_TIME_LIMIT_MINUTES = "time_limit_minutes"
         const val EXTRA_WARNING_MINUTES = "warning_minutes"
@@ -158,9 +158,9 @@ class RideTimerService : Service() {
         nm.createNotificationChannel(redirectChannel)
 
         // Intent that wakes screen, shows over lock screen, and launches Google Maps
-        val redirectIntent = Intent(this, com.bicilona.ui.RedirectActivity::class.java).apply {
-            putExtra(com.bicilona.ui.RedirectActivity.EXTRA_LAT, coords.first)
-            putExtra(com.bicilona.ui.RedirectActivity.EXTRA_LNG, coords.second)
+        val redirectIntent = Intent(this, com.anolddogstudio.bicilona.ui.RedirectActivity::class.java).apply {
+            putExtra(com.anolddogstudio.bicilona.ui.RedirectActivity.EXTRA_LAT, coords.first)
+            putExtra(com.anolddogstudio.bicilona.ui.RedirectActivity.EXTRA_LNG, coords.second)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
 

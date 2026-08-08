@@ -1,4 +1,4 @@
-package com.bicilona.util
+package com.anolddogstudio.bicilona.util
 
 import android.animation.ValueAnimator
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.bicilona.data.db
+package com.anolddogstudio.bicilona.data.db
 
 import android.content.Context
 import androidx.room.Database

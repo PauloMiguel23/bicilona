@@ -1,16 +1,16 @@
-package com.bicilona.ui
+package com.anolddogstudio.bicilona.ui
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.bicilona.data.db.BicilonaDatabase
-import com.bicilona.data.db.FavoritePlace
-import com.bicilona.data.model.BicilonaRoute
-import com.bicilona.data.model.BicilonaStation
-import com.bicilona.data.repository.BicilonaRepository
-import com.bicilona.util.LocationUtils
+import com.anolddogstudio.bicilona.data.db.BicilonaDatabase
+import com.anolddogstudio.bicilona.data.db.FavoritePlace
+import com.anolddogstudio.bicilona.data.model.BicilonaRoute
+import com.anolddogstudio.bicilona.data.model.BicilonaStation
+import com.anolddogstudio.bicilona.data.repository.BicilonaRepository
+import com.anolddogstudio.bicilona.util.LocationUtils
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
