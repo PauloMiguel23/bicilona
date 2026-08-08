@@ -642,13 +642,25 @@ class MainActivity : AppCompatActivity() {
     // Observe ViewModel
     // ════════════════════════════════════════
 
+    /**
+     * Show the "no stations nearby" empty state only once loading has
+     * finished and we've confirmed there's genuinely nothing to show.
+     */
+    private fun updateEmptyState() {
+        val stations = viewModel.visibleStations.value ?: emptyList()
+        val isLoading = viewModel.loading.value ?: false
+        val showEmpty = !isLoading &&
+            stations.isEmpty() &&
+            viewModel.userLocation != null &&
+            viewModel.route.value == null
+        emptyStateCard.visibility = if (showEmpty) View.VISIBLE else View.GONE
+    }
+
     private fun observeViewModel() {
         viewModel.visibleStations.observe(this) { stations ->
             updateStationMarkers(stations)
             updateStationStats(stations)
-            // Show empty state if no stations in radius (and we have a location)
-            val showEmpty = stations.isEmpty() && viewModel.userLocation != null && viewModel.route.value == null
-            emptyStateCard.visibility = if (showEmpty) View.VISIBLE else View.GONE
+            updateEmptyState()
         }
 
         viewModel.nearestStation.observe(this) { station ->
@@ -695,6 +707,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.loading.observe(this) { isLoading ->
             progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            updateEmptyState()
         }
 
         viewModel.error.observe(this) { error ->
